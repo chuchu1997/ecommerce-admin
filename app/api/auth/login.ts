@@ -29,6 +29,12 @@ export default async function handler(
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    if (user.role != "ADMIN") {
+      return res
+        .status(401)
+        .json({ message: "Invalid credentials you are not ADMIN !!!" });
+    }
+
     // Check password
     const isPasswordValid = await comparePassword(password, user.password);
 

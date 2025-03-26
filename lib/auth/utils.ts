@@ -24,7 +24,7 @@ export function generateToken(user: Partial<User>): string {
       role: user.role,
     },
     process.env.JWT_SECRET || "",
-    { expiresIn: "1d" }
+    { expiresIn: "10d" } // Token will expire in 10 days
   );
 }
 
