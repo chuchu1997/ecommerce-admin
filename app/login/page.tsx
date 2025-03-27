@@ -35,12 +35,8 @@ export default function LoginForm() {
   // Form submission handler
   const onSubmit = async (data: LoginFormData) => {
     try {
-        console.log("DATA",data);
        await login(data.name,data.password);
    
-   
-
-
       
     //   await login(data.name, data.password);
     } catch (error) {

@@ -1,4 +1,5 @@
 "use client";
+import { StoreModal } from "@/components/modals/store-modal";
 import { Modal } from "@/components/ui/modal";
 import { useAuth } from "@/hooks/auth/useAuth";
 import { useStoreModal } from "@/hooks/use-store-modal";
@@ -16,11 +17,14 @@ export default function SetupPage() {
   })
 
 
-  // useEffect(() => {
-  //   if (!isOpen) {
-  //     onOpen();
-  //   }
-  // }, [isOpen, onOpen]);
+  useEffect(() => {
+    if (!isOpen) {
+      onOpen();
+    }
+  }, [isOpen, onOpen]);
 
-  return <div className="p-4">THIS IS PROTECTED PAGE </div>;
+  return <div className="p-4">
+    
+    {/* <StoreModal/> */}
+    THIS IS PROTECTED PAGE </div>;
 }
