@@ -1,9 +1,17 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { User } from "@prisma/client";
+import {User} from "@prisma/client";
+
+// import { User } from "@prisma/client";
 
 // Hash password
+
+
 export async function hashPassword(password: string): Promise<string> {
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+
+
   return await bcrypt.hash(password, 10);
 }
 
@@ -29,10 +37,11 @@ export function generateToken(user: Partial<User>): string {
 }
 
 // Verify JWT token
-export function verifyToken(token: string): any {
+export function verifyToken(token: string){
   try {
     return jwt.verify(token, process.env.JWT_SECRET || "");
   } catch (error) {
+    console.log(error)
     return null;
   }
 }

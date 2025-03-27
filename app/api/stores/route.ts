@@ -1,14 +1,19 @@
+/** @format */
+
+import { useAuth } from "@/hooks/auth/useAuth";
 import prismadb from "@/lib/primadb";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    let userID = null;
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { isAuthenticated } = useAuth();
+
     const body = await req.json();
 
     const { name } = body;
 
-    if (!userID) {
+    if (!isAuthenticated) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
