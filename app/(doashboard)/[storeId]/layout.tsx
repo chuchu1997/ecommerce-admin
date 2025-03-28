@@ -1,32 +1,37 @@
+import Navbar from "@/components/navbar";
+import { getCurrentUser } from "@/lib/auth/utils";
 import prismadb from "@/lib/primadb";
 import { redirect } from "next/navigation";
 
-export default async function DashboardLayout({
-  children,
-  params,
-}: {
+interface LayoutProps {
   children: React.ReactNode;
-  params: { storeId: string };
-}) {
-  //   const userID = null;
-  //   if (!userID) {
-  //     redirect("/sign-in");
-  //   }
+  params: Promise<{ storeId: string }>;
 
-  //   const store = await prismadb.store.findFirst({
-  //     where: {
-  //       id: params.storeId,
-  //       userID,
-  //     },
-  //   });
+  
+}
 
-  //   if (!store) {
-  //     redirect("/");
-  //   }
+export default async function DashboardLayout(props: LayoutProps) {
+  const { children, params } = props;
+  const { storeId } = await params; 
+  console.log("STORE ID",storeId);
+
+  const user = await getCurrentUser();
+
+  const store = await prismadb.store.findFirst({
+    where: { 
+      id: storeId,
+      userID: user?.id,
+    },
+  });
+
+  if (!store) {
+    redirect("/");
+  }
+
   return (
     <div className="wrapper-dashboard">
-      <div>THIS IS NAVBAR</div>
-      <div>MAIN BODY</div>
+        <Navbar/>
+      <div className = "min-h-screen container mx-auto mt-[10px]">{children}</div>
       <div>FOOTER</div>
     </div>
   );

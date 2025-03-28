@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json(
           { 
             isAuthenticated: false, 
-            message: 'Invalid or expired token' 
+            message: `Invalid or expired token ${error}` 
           }, 
           { status: 401 }
         )

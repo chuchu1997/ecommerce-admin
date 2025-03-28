@@ -40,9 +40,18 @@ export const StoreModal = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
+
+      const response = await axios.post('/api/stores',values);
+
+      if(response.status == 200){
+        // toast.success("Tạo store thành công !!")
+
+        window.location.assign(`/${response.data.id}`)
+      }
       // const response = await axios.post("/api/stores", values);
       // console.log("response", response.data);
-      throw new Error("THIS IS ERROR WHHEN CREATEA THORW");
+ 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       toast.error("Something wrong");
     } finally {
