@@ -20,7 +20,7 @@ export default async function SettingsPage(props: SettingsPageProps) {
       userID: user?.id,
     },
   });
-  console.log("STORE CALL NE ", store);
+
   if (!store) {
     redirect("/");
   }

@@ -10,7 +10,7 @@ import { Store } from "@prisma/client";
 import { Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Form,
   FormField,
@@ -19,6 +19,10 @@ import {
   FormControl,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { useParams, useRouter } from "next/navigation";
+import { AlertModal } from "@/components/modals/alert-modal";
 
 interface SettingsProps {
   initialData: Store;
@@ -31,6 +35,16 @@ const formSchema = z.object({
 type SettingsFormValues = z.infer<typeof formSchema>;
 
 export const SettingsForm: React.FC<SettingsProps> = ({ initialData }) => {
+  const params = useParams();
+  const router = useRouter();
+
+  const [isReady, setIsReady] = useState(false);
+  useEffect(() => {
+    if (params.storeId) {
+      setIsReady(true);
+    }
+  }, [params]);
+
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const form = useForm<SettingsFormValues>({
@@ -39,14 +53,52 @@ export const SettingsForm: React.FC<SettingsProps> = ({ initialData }) => {
   });
 
   const onSubmit = async (data: SettingsFormValues) => {
-    setLoading(true);
-    console.log("DATA", data);
+    console.log("PARAM CALL ", params.storeId);
+    try {
+      setLoading(true);
+      await axios.patch(`/api/stores/${params.storeId}`, data);
+      router.refresh();
+      toast.success("Thay đổi tên store thành công !!");
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_err) {
+      toast.error("Something when wrong !!");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const onDelete = async () => {
+    try {
+      setLoading(true);
+      await axios.delete(`/api/stores/${params.storeId}`);
+
+      router.refresh();
+      toast.success("Xoá store thành công !!");
+    } catch (err) {
+      toast.error("Something went wrong !!");
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <div>
+      <AlertModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        loading={loading}
+        onConfirm={async () => {
+          await onDelete();
+        }}
+      />
       <div className="flex items-center justify-between my-4">
         <Heading title="Settings" description="Manage store preferences" />
-        <Button variant="destructive" size="icon" onClick={() => {}}>
+        <Button
+          variant="destructive"
+          size="icon"
+          disabled={loading}
+          onClick={async () => {
+            setOpen(true);
+          }}>
           <Trash className="w-4 h-4 "></Trash>
         </Button>
       </div>

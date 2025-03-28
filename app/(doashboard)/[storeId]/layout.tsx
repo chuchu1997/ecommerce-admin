@@ -13,7 +13,7 @@ interface LayoutProps {
 export default async function DashboardLayout(props: LayoutProps) {
   const { children, params } = props;
   const { storeId } = await params; 
-  console.log("STORE ID",storeId);
+
 
   const user = await getCurrentUser();
 
