@@ -23,6 +23,8 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { AlertModal } from "@/components/modals/alert-modal";
+import { ApiAlert } from "@/components/ui/api-alert";
+import { userOrigin } from "@/hooks/use-origin";
 
 interface SettingsProps {
   initialData: Store;
@@ -46,6 +48,8 @@ export const SettingsForm: React.FC<SettingsProps> = ({ initialData }) => {
   }, [params]);
 
   const [open, setOpen] = useState(false);
+  const origin = userOrigin();
+
   const [loading, setLoading] = useState(false);
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(formSchema),
@@ -53,7 +57,6 @@ export const SettingsForm: React.FC<SettingsProps> = ({ initialData }) => {
   });
 
   const onSubmit = async (data: SettingsFormValues) => {
-    console.log("PARAM CALL ", params.storeId);
     try {
       setLoading(true);
       await axios.patch(`/api/stores/${params.storeId}`, data);
@@ -81,7 +84,7 @@ export const SettingsForm: React.FC<SettingsProps> = ({ initialData }) => {
     }
   };
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <AlertModal
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -98,7 +101,8 @@ export const SettingsForm: React.FC<SettingsProps> = ({ initialData }) => {
           disabled={loading}
           onClick={async () => {
             setOpen(true);
-          }}>
+          }}
+        >
           <Trash className="w-4 h-4 "></Trash>
         </Button>
       </div>
@@ -106,9 +110,7 @@ export const SettingsForm: React.FC<SettingsProps> = ({ initialData }) => {
       <Separator />
 
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 w-full">
+        <form onSubmit={form.handleSubmit(onSubmit)} className=" w-full">
           <div className="grid grid-cols-3 gap-8 mt-[15px]">
             <FormField
               control={form.control}
@@ -120,18 +122,26 @@ export const SettingsForm: React.FC<SettingsProps> = ({ initialData }) => {
                     <Input
                       disabled={loading}
                       {...field}
-                      placeholder="Store name "></Input>
+                      placeholder="Store name "
+                    ></Input>
                   </FormControl>
                 </FormItem>
               )}
             />
           </div>
 
-          <Button disabled={loading} className="ml-auto" type="submit">
+          <Button disabled={loading} className="ml-auto mt-4" type="submit">
             Save Changes
           </Button>
         </form>
       </Form>
+
+      <Separator />
+      <ApiAlert
+        title="NEXT_PUBLIC_API_URL"
+        description={`${origin}/api/${params.storeId}`}
+        variant="public"
+      />
     </div>
   );
 };

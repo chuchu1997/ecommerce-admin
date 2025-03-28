@@ -41,17 +41,16 @@ export const StoreModal = () => {
     try {
       setLoading(true);
 
-      const response = await axios.post('/api/stores',values);
+      const response = await axios.post("/api/stores", values);
 
-      if(response.status == 200){
-        // toast.success("Tạo store thành công !!")
-
-        window.location.assign(`/${response.data.id}`)
+      if (response.status == 200) {
+        window.location.assign(`/${response.data.id}`);
+        toast.success("Tạo store thành công !!");
       }
       // const response = await axios.post("/api/stores", values);
       // console.log("response", response.data);
- 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       toast.error("Something wrong");
     } finally {

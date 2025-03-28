@@ -69,7 +69,8 @@ export default function StoreSwitcher({
           role="combobox"
           aria-expanded={open}
           aria-label="Chọn store"
-          className={cn("w-[200px] justify-between", className)}>
+          className={cn("w-[200px] justify-between", className)}
+        >
           <StoreIcon className="mr-2 h-4 w-4" />
           {currentStore?.label}
           <ChevronsUpDownIcon className="w-4 h-4 shrink-0 ml-auto opacity-50" />
@@ -86,7 +87,8 @@ export default function StoreSwitcher({
                 <CommandItem
                   className="text-sm"
                   key={store.value}
-                  onSelect={() => onStoreSelect(store)}>
+                  onSelect={() => onStoreSelect(store)}
+                >
                   <StoreIcon className="mr-2 h-4 w-4" />
                   {store.label}
                   <Check
@@ -108,7 +110,8 @@ export default function StoreSwitcher({
                 onSelect={() => {
                   setOpen(false);
                   storeModal.onOpen();
-                }}>
+                }}
+              >
                 <PlusCircleIcon className="mr-2 h-5 w-5" />
                 <span>Tạo 1 Store Mới</span>
               </CommandItem>
