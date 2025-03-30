@@ -16,15 +16,15 @@ export async function GET(
       return new NextResponse("Store Id is required ", { status: 400 });
     }
 
-    const billboards = await prismadb.billboard.findMany({
+    const categories = await prismadb.category.findMany({
       where: {
         storeId: storeId,
       },
     });
 
-    return NextResponse.json(billboards, { status: 200 });
+    return NextResponse.json(categories, { status: 200 });
   } catch (err) {
-    console.log("[BILLBOARDS_POST]", err);
+    console.log("[CATEGORIES_GET]", err);
     return new NextResponse("Interal error", { status: 500 });
   }
 }
@@ -41,17 +41,17 @@ export async function POST(
 
     const body = await req.json();
 
-    const { label, imageUrl } = body;
+    const { billboardId, name } = body;
 
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    if (!label) {
-      return new NextResponse("Label is required", { status: 400 });
+    if (!billboardId) {
+      return new NextResponse("Billboard ID is required", { status: 400 });
     }
-    if (!imageUrl) {
-      return new NextResponse("Image Url is required", { status: 400 });
+    if (!name) {
+      return new NextResponse("Name  is required", { status: 400 });
     }
     if (!storeId) {
       return new NextResponse("Store Id is required ", { status: 400 });
@@ -67,17 +67,17 @@ export async function POST(
       return new NextResponse("Forbiden ", { status: 403 });
     }
 
-    const billboard = await prismadb.billboard.create({
+    const category = await prismadb.category.create({
       data: {
-        label,
-        imageUrl,
+        name: name,
+        billboardId: billboardId,
         storeId: storeId,
       },
     });
 
-    return NextResponse.json(billboard, { status: 200 });
+    return NextResponse.json(category, { status: 200 });
   } catch (err) {
-    console.log("[BILLBOARDS_POST]", err);
+    console.log("[CATEGORY_POST]", err);
     return new NextResponse("Interal error", { status: 500 });
   }
 }
