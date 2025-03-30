@@ -36,8 +36,61 @@ model Store {
 
   billboards Billboard[] @relation("StoreToBillboard")
   categories Category[] @relation("StoreToCategory")
+  products Product[] @relation("StoreToProduct")
+
 }
 
+model Category{
+
+  id String @id @default(uuid())
+  storeId String
+  store Store @relation("StoreToCategory",fields: [storeId],references: [id])
+  billboardId String
+  billboard Billboard @relation(fields: [billboardId],references: [id])
+  name String
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+  products Product[]  @relation("CategoryToProduct")
+
+  @@index([storeId])
+    @@index([billboardId])
+
+
+}
+
+model Product {
+  id String @id @default(uuid())
+  storeId String
+  store Store @relation("StoreToProduct",fields: [storeId],references: [id])
+  categoryId String
+  category Category  @relation("CategoryToProduct",fields: [categoryId],references: [id])
+  name String
+  price Decimal
+  isFeatured Boolean @default(false)
+  isArchived Boolean @default(false)
+  description String
+  shortDescription String
+  image Image[]
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+  slug String
+  sku String
+  viewCount Int @default(0)
+  ratingCount Int @default(0)
+  stockQuantity Int
+      @@index([storeId])
+      @@index([categoryId])
+
+}
+model Image { 
+  id String @id @default(uuid())
+  productId String
+  product Product @relation(fields: [productId],references: [id],onDelete: Cascade)
+  url String
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+  @@index([productId])
+}
 model Billboard{
   id String @id @default(uuid())
   storeId String 
@@ -52,22 +105,9 @@ model Billboard{
 }
 
 
-model Category{
-
-  id String @id @default(uuid())
-  storeId String
-  store Store @relation("StoreToCategory",fields: [storeId],references: [id])
-  billboardId String
-  billboard Billboard @relation(fields: [billboardId],references: [id])
-  name String
-  createAt DateTime @default(now())
-  updateAt DateTime @updatedAt
-
-  @@index([storeId])
-    @@index([billboardId])
 
 
-}
+
 
  enum Role {
   USER
