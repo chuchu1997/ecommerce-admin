@@ -23,8 +23,8 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { AlertModal } from "@/components/modals/alert-modal";
-import { ApiAlert } from "@/components/ui/api-alert";
 import { userOrigin } from "@/hooks/use-origin";
+import { ApiList } from "@/components/ui/api-list";
 
 interface SettingsProps {
   initialData: Store;
@@ -48,7 +48,6 @@ export const SettingsForm: React.FC<SettingsProps> = ({ initialData }) => {
   }, [params]);
 
   const [open, setOpen] = useState(false);
-  const origin = userOrigin();
 
   const [loading, setLoading] = useState(false);
   const form = useForm<SettingsFormValues>({
@@ -101,8 +100,7 @@ export const SettingsForm: React.FC<SettingsProps> = ({ initialData }) => {
           disabled={loading}
           onClick={async () => {
             setOpen(true);
-          }}
-        >
+          }}>
           <Trash className="w-4 h-4 "></Trash>
         </Button>
       </div>
@@ -122,8 +120,7 @@ export const SettingsForm: React.FC<SettingsProps> = ({ initialData }) => {
                     <Input
                       disabled={loading}
                       {...field}
-                      placeholder="Store name "
-                    ></Input>
+                      placeholder="Store name "></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -137,11 +134,8 @@ export const SettingsForm: React.FC<SettingsProps> = ({ initialData }) => {
       </Form>
 
       <Separator />
-      <ApiAlert
-        title="NEXT_PUBLIC_API_URL"
-        description={`${origin}/api/${params.storeId}`}
-        variant="public"
-      />
+
+      <ApiList entityName="stores" entityIdName="storesId" />
     </div>
   );
 };

@@ -7,7 +7,8 @@ import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { useState } from "react";
-import { Avatar, AvatarFallback } from "./ui/avatar";
+import AvatarButton from "./avatar-button";
+import { Separator } from "./ui/separator";
 
 export function MainNav({ className }: React.HtmlHTMLAttributes<HTMLElement>) {
   const pathname = usePathname();
@@ -79,7 +80,9 @@ export function MainNav({ className }: React.HtmlHTMLAttributes<HTMLElement>) {
       {/* Mobile navigation - shown when menu is open */}
       {isMenuOpen && (
         <nav className="sm:hidden absolute top-10 right-[0] w-[300px] bg-background z-50 shadow-md rounded-md p-4 border">
-          <div className="flex flex-col space-y-4">
+          <div className="my-4 text-center">Menu:</div>
+          <Separator />
+          <div className="flex flex-col space-y-4 py-4">
             {routes.map((route) => (
               <Link
                 className={cn(
@@ -95,14 +98,7 @@ export function MainNav({ className }: React.HtmlHTMLAttributes<HTMLElement>) {
               </Link>
             ))}
             <div className=" ">
-              <Avatar
-                className="cursor-pointer"
-                onClick={() => {
-                  console.log("CALL SOME THINBG");
-                }}>
-                {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
-                <AvatarFallback className="p-2">AD</AvatarFallback>
-              </Avatar>
+              <AvatarButton />
             </div>
           </div>
         </nav>
