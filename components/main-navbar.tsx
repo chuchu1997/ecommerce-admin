@@ -1,3 +1,5 @@
+/** @format */
+
 "use client";
 
 import { cn } from "@/lib/utils";
@@ -5,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { useState } from "react";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 
 export function MainNav({ className }: React.HtmlHTMLAttributes<HTMLElement>) {
   const pathname = usePathname();
@@ -44,63 +47,66 @@ export function MainNav({ className }: React.HtmlHTMLAttributes<HTMLElement>) {
 
   return (
     <div className="relative ">
-    {/* Hamburger button - only visible on mobile */}
-    <button
-      onClick={toggleMenu}
-      className="sm:hidden p-2 text-muted-foreground hover:text-primary"
-      aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-    >
-      {isMenuOpen ? (
-        <X size={24} />
-      ) : (
-        <Menu size={24} />
-      )}
-    </button>
+      {/* Hamburger button - only visible on mobile */}
+      <button
+        onClick={toggleMenu}
+        className="sm:hidden p-2 text-muted-foreground hover:text-primary"
+        aria-label={isMenuOpen ? "Close menu" : "Open menu"}>
+        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
 
-    {/* Desktop navigation - hidden on mobile */}
-    <nav className={cn("sm:flex items-center space-x-4 lg:space-x-6 hidden", className)}>
-      {routes.map((route) => (
-        <Link
-          className={cn(
-            "text-sm font-medium transition-colors hover:text-primary",
-            route.active
-              ? "text-black dark:text-white"
-              : "text-muted-foreground"
-          )}
-          href={route.href}
-          key={route.href}
-        >
-          {route.label}
-        </Link>
-      ))}
-    </nav>
-
-    {/* Mobile navigation - shown when menu is open */}
-    {isMenuOpen && (
-      <nav className="sm:hidden absolute top-10 right-[0] w-[300px] bg-background z-50 shadow-md rounded-md p-4 border">
-        <div className="flex flex-col space-y-4">
-          {routes.map((route) => (
-            <Link
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                route.active
-                  ? "text-black dark:text-white"
-                  : "text-muted-foreground"
-              )}
-              href={route.href}
-              key={route.href}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {route.label}
-            </Link>
-          ))}
-             <div className=" ">
-            <div>User Button</div>
-          </div>
-        </div>
+      {/* Desktop navigation - hidden on mobile */}
+      <nav
+        className={cn(
+          "sm:flex items-center space-x-4 lg:space-x-6 hidden",
+          className
+        )}>
+        {routes.map((route) => (
+          <Link
+            className={cn(
+              "text-sm font-medium transition-colors hover:text-primary",
+              route.active
+                ? "text-black dark:text-white"
+                : "text-muted-foreground"
+            )}
+            href={route.href}
+            key={route.href}>
+            {route.label}
+          </Link>
+        ))}
       </nav>
-    )}
-  </div>
-  
+
+      {/* Mobile navigation - shown when menu is open */}
+      {isMenuOpen && (
+        <nav className="sm:hidden absolute top-10 right-[0] w-[300px] bg-background z-50 shadow-md rounded-md p-4 border">
+          <div className="flex flex-col space-y-4">
+            {routes.map((route) => (
+              <Link
+                className={cn(
+                  "text-sm font-medium transition-colors hover:text-primary",
+                  route.active
+                    ? "text-black dark:text-white"
+                    : "text-muted-foreground"
+                )}
+                href={route.href}
+                key={route.href}
+                onClick={() => setIsMenuOpen(false)}>
+                {route.label}
+              </Link>
+            ))}
+            <div className=" ">
+              <Avatar
+                className="cursor-pointer"
+                onClick={() => {
+                  console.log("CALL SOME THINBG");
+                }}>
+                {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
+                <AvatarFallback className="p-2">AD</AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
+        </nav>
+      )}
+    </div>
   );
 }

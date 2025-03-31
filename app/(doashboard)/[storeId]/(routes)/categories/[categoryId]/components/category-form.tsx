@@ -10,7 +10,7 @@ import { Billboard, Category } from "@prisma/client";
 import { Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Form,
   FormField,
@@ -23,8 +23,6 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { AlertModal } from "@/components/modals/alert-modal";
-import { ApiAlert } from "@/components/ui/api-alert";
-import { userOrigin } from "@/hooks/use-origin";
 import {
   Select,
   SelectContent,
@@ -52,20 +50,12 @@ export const CategoryForm: React.FC<CategoryProps> = ({
   const params = useParams();
   const router = useRouter();
 
-  const [isReady, setIsReady] = useState(false);
-
   const title = initialData ? "Edit Category" : "Create Category";
   const description = initialData ? "Edit a Category" : "Add a new Category";
   const toastMessage = initialData ? "Category Update" : "Category created";
   const action = initialData ? "Save change " : "Create Category";
-  useEffect(() => {
-    if (params.storeId) {
-      setIsReady(true);
-    }
-  }, [params]);
 
   const [open, setOpen] = useState(false);
-  const origin = userOrigin();
 
   const [loading, setLoading] = useState(false);
   const form = useForm<CategoryFormValues>({
@@ -109,7 +99,8 @@ export const CategoryForm: React.FC<CategoryProps> = ({
       toast.success("Xóa Category thành công !!");
     } catch (err) {
       toast.error(
-        "Make sure you removed all products using this category first !!"
+        "Make sure you removed all products using this category first !!",
+        err
       );
     } finally {
       setLoading(false);
@@ -135,8 +126,7 @@ export const CategoryForm: React.FC<CategoryProps> = ({
             disabled={loading}
             onClick={async () => {
               setOpen(true);
-            }}
-          >
+            }}>
             <Trash className="w-4 h-4 "></Trash>
           </Button>
         )}
@@ -157,8 +147,7 @@ export const CategoryForm: React.FC<CategoryProps> = ({
                     <Input
                       disabled={loading}
                       {...field}
-                      placeholder="Billboard Label  "
-                    ></Input>
+                      placeholder="Billboard Label  "></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -174,8 +163,7 @@ export const CategoryForm: React.FC<CategoryProps> = ({
                     disabled={loading}
                     onValueChange={field.onChange}
                     value={field.value}
-                    defaultValue={field.value}
-                  >
+                    defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue
