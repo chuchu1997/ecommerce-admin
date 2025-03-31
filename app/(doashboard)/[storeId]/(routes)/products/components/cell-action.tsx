@@ -4,11 +4,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
-  DropdownMenuItem,
-  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { BillboardColumn } from "./column";
-
+import { ProductColumn } from "./column";
+import {
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@radix-ui/react-dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
 import toast from "react-hot-toast";
@@ -18,29 +19,34 @@ import axios from "axios";
 import { AlertModal } from "@/components/modals/alert-modal";
 
 interface CellActionProps {
-  data: BillboardColumn;
+  data: ProductColumn;
 }
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const router = useRouter();
   const params = useParams();
+
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
   const onCopy = (id: string) => {
     navigator.clipboard.writeText(id);
-    toast.success("Copy Billboard ID Thành Công");
+    toast.success("Copy Category ID Thành Công");
   };
   const onEdit = (id: string) => {
-    router.push(`/${params.storeId}/billboards/${id}`);
+    console.log("ID", id);
+    router.push(`/${params.storeId}/products/${data.id}`);
   };
-  const onDelete = async (id: string) => {
+  const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/${params.storeId}/billboards/${id}`);
+      await axios.delete(`/api/${params.storeId}/products/${data.id}`);
+
       router.refresh();
-      toast.success("Xoá billboard thành công !!");
+      toast.success("Xoá Sản phẩm thành công !!");
     } catch (err) {
-      toast.error("Something went wrong !!");
+      toast.error(
+        "Hãy đảm bảo xóa toàn bộ products liên kết với categories trước khi xóa  !!"
+      );
     } finally {
       setLoading(false);
     }
@@ -52,7 +58,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         isOpen={open}
         onClose={() => setOpen(false)}
         onConfirm={() => {
-          onDelete(data.id);
+          onDelete();
         }}
       />
       <DropdownMenu>

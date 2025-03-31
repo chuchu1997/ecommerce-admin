@@ -5,23 +5,28 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-action";
 import Image from "next/image";
+
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type BillboardColumn = {
+export type ProductColumn = {
   id: string;
-  label: string;
-  createAt: string;
   imageUrl: string;
+  name: string;
+  isFeatured: boolean;
+  isArchieved: boolean;
+  sku: string;
+  category: string;
+  price: number;
 };
 
-export const columns: ColumnDef<BillboardColumn>[] = [
+export const columns: ColumnDef<ProductColumn>[] = [
   {
-    accessorKey: "label",
-    header: "Label",
+    accessorKey: "name",
+    header: "Name",
+    cell: ({ row }) => row.original.name,
   },
-
   {
-    accessorKey: "imageUrl",
+    accessorKey: "image",
     header: "Image",
     cell: ({ row }) => (
       <div className="relative w-[80px] h-[80px] ">
@@ -35,10 +40,39 @@ export const columns: ColumnDef<BillboardColumn>[] = [
     ),
   },
   {
+    accessorKey: "category",
+    header: "Category",
+    cell: ({ row }) => row.original.category,
+  },
+
+  {
+    accessorKey: "sku",
+    header: "SKU",
+    cell: ({ row }) => row.original.sku,
+  },
+
+  {
+    accessorKey: "price",
+    header: "Price",
+    cell: ({ row }) => row.original.price,
+  },
+
+  {
+    accessorKey: "isFeatured",
+    header: "IsFeatured",
+  },
+  {
+    accessorKey: "isArchieved",
+    header: "IsArchieved",
+  },
+
+  {
     accessorKey: "createAt",
     header: "Date",
   },
+
   {
+    header: "Actions",
     id: "actions",
     cell: ({ row }) => <CellAction data={row.original} />,
   },

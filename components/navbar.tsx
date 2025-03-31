@@ -16,13 +16,13 @@ const Navbar = async () => {
   return (
     <div className="border-b">
       <div className="container mx-auto">
-        <div className="flex h-16 items-center px-4">
+        <div className="flex h-16 items-center justify-between px-4">
           <StoreSwitcher items = {stores}></StoreSwitcher>
           <MainNav className="mx-8" />
-
-          <div className="ml-auto flex items-center space-x-4">
+          <div className="ml-auto hidden md:flex items-center space-x-4 ">
             <div>User Button</div>
           </div>
+       
         </div>
       </div>
     </div>

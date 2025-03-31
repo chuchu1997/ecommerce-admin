@@ -65,12 +65,12 @@ model Product {
   categoryId String
   category Category  @relation("CategoryToProduct",fields: [categoryId],references: [id])
   name String
-  price Decimal
+  price Float
   isFeatured Boolean @default(false)
   isArchived Boolean @default(false)
   description String
   shortDescription String
-  image Image[]
+  images Image[]
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt
   slug String
@@ -103,9 +103,6 @@ model Billboard{
   updateAt DateTime @updatedAt
   @@index([storeId])
 }
-
-
-
 
 
 

@@ -1,43 +1,50 @@
 import prismadb from "@/lib/primadb";
-import { CategoryClient } from "./components/client";
+import { ProductClient } from "./components/client";
 import { format } from "date-fns";
-import { CategoryColumn } from "./components/column";
+import { ProductColumn } from "./components/column";
 
 interface CategoriesPageProps {
   params: Promise<{ storeId: string }>;
 }
 
-const CategoryPage = async (props: CategoriesPageProps) => {
+const ProductPage = async (props: CategoriesPageProps) => {
   const { params } = props;
   const { storeId } = await params;
 
   console.log("STORE ID", storeId);
-  const categories = await prismadb.category.findMany({
+  const products = await prismadb.product.findMany({
     where: {
       storeId: storeId,
     },
     include: {
-      billboard: true,
+      images:true,
+      category: true,
     },
     orderBy: {
       createAt: "desc",
     },
   });
 
-  const formatCategoriesColumn: CategoryColumn[] = categories.map((item) => ({
-    billboardImageUrl: item.billboard.imageUrl,
+  const formatProductsColumn: ProductColumn[] = products.map((item) => ({
+
     id: item.id,
+    imageUrl: item.images[0]?.url ?? '',
     name: item.name,
-    billboardLabel: item.billboard.label,
     createAt: format(item.createAt, "MMMM do,yyyy"),
+    isFeatured: item.isFeatured ,
+    isArchieved: item.isArchived ,
+    sku: item.sku || "",
+    category: item.category.name,
+    price:Number(item.price)
+    
   }));
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <CategoryClient data={formatCategoriesColumn} />
+        <ProductClient data={formatProductsColumn} />
         {/* <BillboardClient data={formatBillboardColumn} /> */}
       </div>
     </div>
   );
 };
-export default CategoryPage;
+export default ProductPage;
