@@ -10,7 +10,6 @@ export async function GET(
     { params }: { params: { storeId: string } }
   ) {
     try {
-        console.log("CO GOI NE ");
       const { storeId } = await params;
   
       if (!storeId) {
@@ -24,7 +23,7 @@ export async function GET(
       if (!query) {
         return NextResponse.json({ message: "Query parameter is required" }, { status: 400 });
       }
-      console.log("QUERY",query);
+    
 
       const products = await prismadb.product.findMany({
         where: {
@@ -34,9 +33,10 @@ export async function GET(
             { description: { contains: query,  } },
           ],
         },
+        include:{
+            images:true
+        }
       });
-  
-      console.log("PRODUCTS ",products);
 
       return NextResponse.json(products, { status: 200 });
     } catch (err) {
