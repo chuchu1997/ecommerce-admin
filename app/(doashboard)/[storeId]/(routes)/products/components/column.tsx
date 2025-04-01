@@ -17,6 +17,7 @@ export type ProductColumn = {
   sku: string;
   category: string;
   price: number;
+  slug: string;
 };
 
 export const columns: ColumnDef<ProductColumn>[] = [
@@ -24,6 +25,11 @@ export const columns: ColumnDef<ProductColumn>[] = [
     accessorKey: "name",
     header: "Name",
     cell: ({ row }) => row.original.name,
+  },
+  {
+    accessorKey: "slug",
+    header: "Slug",
+    cell: ({ row }) => row.original.slug,
   },
   {
     accessorKey: "image",

@@ -39,6 +39,7 @@ interface CategoryProps {
 const formSchema = z.object({
   name: z.string().min(1),
   billboardId: z.string().min(1),
+  slugData: z.string().min(1),
 });
 
 type CategoryFormValues = z.infer<typeof formSchema>;
@@ -60,10 +61,17 @@ export const CategoryForm: React.FC<CategoryProps> = ({
   const [loading, setLoading] = useState(false);
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
-      name: "",
-      billboardId: "",
-    },
+    defaultValues: initialData
+      ? {
+          name: initialData.name,
+          billboardId: initialData.billboardId,
+          slugData: initialData.slug, // Map `slug` → `slugData`
+        }
+      : {
+          name: "",
+          billboardId: "",
+          slugData: "",
+        },
   });
 
   const onSubmit = async (data: CategoryFormValues) => {
@@ -71,7 +79,7 @@ export const CategoryForm: React.FC<CategoryProps> = ({
       setLoading(true);
       if (initialData) {
         await axios.patch(
-          `/api/${params.storeId}/categories/${params.categoryId}`,
+          `/api/${params.storeId}/categories/${params.slug}`,
           data
         );
       } else {
@@ -147,7 +155,24 @@ export const CategoryForm: React.FC<CategoryProps> = ({
                     <Input
                       disabled={loading}
                       {...field}
-                      placeholder="Billboard Label  "></Input>
+                      placeholder="Category Label  "></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="slugData"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Slug </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      pattern="\S*"
+                      disabled={loading}
+                      {...field}
+                      placeholder="Slug Label  "></Input>
                   </FormControl>
                 </FormItem>
               )}

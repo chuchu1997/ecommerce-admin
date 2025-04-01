@@ -32,14 +32,14 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     navigator.clipboard.writeText(id);
     toast.success("Copy Category ID Thành Công");
   };
-  const onEdit = (id: string) => {
-    console.log("ID", id);
-    router.push(`/${params.storeId}/products/${data.id}`);
+  const onEdit = () => {
+
+    router.push(`/${params.storeId}/products/${data.slug}`);
   };
   const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/${params.storeId}/products/${data.id}`);
+      await axios.delete(`/api/${params.storeId}/products/${data.slug}`);
 
       router.refresh();
       toast.success("Xoá Sản phẩm thành công !!");
@@ -79,7 +79,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           </DropdownMenuItem>
           <DropdownMenuItem
             className="flex items-center mb-2 cursor-pointer"
-            onClick={() => onEdit(data.id)}
+            onClick={() => onEdit()}
           >
             <Edit className="mr-2 h-4 w-4" />
             <span>Edit</span>

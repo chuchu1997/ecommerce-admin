@@ -25,6 +25,7 @@ const CategoryPage = async (props: CategoriesPageProps) => {
   });
 
   const formatCategoriesColumn: CategoryColumn[] = categories.map((item) => ({
+    slug:item.slug,
     billboardImageUrl: item.billboard.imageUrl,
     id: item.id,
     name: item.name,

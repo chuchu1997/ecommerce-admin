@@ -11,7 +11,7 @@ const ProductPage = async (props: CategoriesPageProps) => {
   const { params } = props;
   const { storeId } = await params;
 
-  console.log("STORE ID", storeId);
+
   const products = await prismadb.product.findMany({
     where: {
       storeId: storeId,
@@ -35,7 +35,8 @@ const ProductPage = async (props: CategoriesPageProps) => {
     isArchieved: item.isArchived ,
     sku: item.sku || "",
     category: item.category.name,
-    price:Number(item.price)
+    price:Number(item.price),
+    slug:item.slug
     
   }));
   return (

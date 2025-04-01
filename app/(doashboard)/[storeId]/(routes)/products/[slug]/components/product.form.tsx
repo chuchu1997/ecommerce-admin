@@ -48,7 +48,7 @@ const formSchema = z.object({
   description: z.string().min(1),
 
   shortDescription: z.string().min(1),
-  slug: z.string().min(1),
+  slugData: z.string().min(1),
   sku: z.string().min(1),
   stockQuantity: z.coerce.number().min(1),
 
@@ -89,6 +89,8 @@ export const ProductForm: React.FC<ProductProps> = ({
       ? {
           ...initialData,
           price: parseFloat(String(initialData.price)),
+
+          slugData: initialData.slug,
         }
       : {
           name: "",
@@ -99,7 +101,7 @@ export const ProductForm: React.FC<ProductProps> = ({
           isArchived: false,
           description: "",
           shortDescription: "",
-          slug: "",
+          slugData: "",
           sku: "",
           stockQuantity: 1,
           viewCount: 0,
@@ -114,7 +116,7 @@ export const ProductForm: React.FC<ProductProps> = ({
       setLoading(true);
       if (initialData) {
         await axios.patch(
-          `/api/${params.storeId}/products/${params.productId}`,
+          `/api/${params.storeId}/products/${params.slug}`,
           data
         );
       } else {
@@ -135,7 +137,7 @@ export const ProductForm: React.FC<ProductProps> = ({
     try {
       setLoading(true);
 
-      await axios.delete(`/api/${params.storeId}/products/${params.productId}`);
+      await axios.delete(`/api/${params.storeId}/products/${params.slug}`);
       router.refresh();
       toast.success("Xóa Sản Phẩm  thành công !!");
     } catch (err) {
@@ -224,12 +226,14 @@ export const ProductForm: React.FC<ProductProps> = ({
             />
             <FormField
               control={form.control}
-              name="slug"
+              name="slugData"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Slug </FormLabel>
                   <FormControl>
                     <Input
+                      type="text"
+                      pattern="\S*"
                       disabled={loading}
                       {...field}
                       placeholder="Slug "></Input>

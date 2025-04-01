@@ -3,16 +3,16 @@ import { CategoryForm } from "./components/category-form";
 // import { BillboardsForm } from "./components/billboard-form";
 
 interface CategoryPage {
-  params: Promise<{ categoryId: string; storeId: string }>;
+  params: Promise<{ slug: string; storeId: string }>;
 }
 
 const CategogyPage = async (props: CategoryPage) => {
   const { params } = props;
-  const { categoryId, storeId } = await params;
+  const { slug, storeId } = await params;
 
   const category = await prismadb.category.findUnique({
     where: {
-      id: categoryId,
+      slug:slug,
     },
   });
   const billboards = await prismadb.billboard.findMany({

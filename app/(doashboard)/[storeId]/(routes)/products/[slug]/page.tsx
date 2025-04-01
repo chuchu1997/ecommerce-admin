@@ -7,13 +7,16 @@ import { ProductForm } from "./components/product.form";
 // import { CategoryForm } from "./components/category-form";
 // import { BillboardsForm } from "./components/billboard-form";
 
-interface CategoryPage {
-  params: Promise<{ productId: string; storeId: string }>;
+interface ProductPageProps {
+  params: Promise<{ slug: string; storeId: string }>;
 }
 
-const ProductPage = async (props: CategoryPage) => {
+const ProductPage = async (props: ProductPageProps) => {
   const { params } = props;
-  const { productId, storeId } = await params;
+  const { slug, storeId } = await params;
+  
+
+  console.log("SLUG",slug);
 
 
 
@@ -25,7 +28,7 @@ const ProductPage = async (props: CategoryPage) => {
 
   const product = await prismadb.product.findUnique({
     where: {
-      id: productId,
+      slug:slug,
       storeId:storeId
     },
     include: {

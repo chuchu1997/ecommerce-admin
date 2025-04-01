@@ -12,6 +12,8 @@ export type CategoryColumn = {
   billboardLabel?: string;
   createAt: string;
   billboardImageUrl:string;
+  slug:string;
+
 
 };
 
@@ -22,6 +24,11 @@ export const columns: ColumnDef<CategoryColumn>[] = [
     cell: ({ row }) => row.original.name,
   },
 
+  {
+    accessorKey: "slug",
+    header: "Slug",
+    cell: ({ row }) => row.original.slug,
+  },
   {
     accessorKey: "billboardLabel",
     header: "Billboard Label",
