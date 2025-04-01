@@ -18,6 +18,17 @@ export async function middleware(request: NextRequest) {
     // '/api/auth/register',
     // '/api/stores/'
   ];
+  
+
+  const res = NextResponse.next();
+  res.headers.set('Access-Control-Allow-Credentials', "true");
+  res.headers.set('Access-Control-Allow-Origin', '*'); // replace this with your actual origin
+  res.headers.set('Access-Control-Allow-Methods', 'GET,DELETE,PATCH,POST,PUT');
+  res.headers.set(
+      'Access-Control-Allow-Headers',
+      'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
 
   const path = request.nextUrl.pathname;
   const token = request.cookies.get("token")?.value || "";
@@ -28,7 +39,7 @@ export async function middleware(request: NextRequest) {
   // If it's a public path, allow access
   if (publicPaths.some((publicPath) => path.startsWith(publicPath))) {
     // console.log('Accessing Public Path');
-    return NextResponse.next();
+    return res;
   }
 
   if (!token) {
@@ -55,7 +66,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    return NextResponse.next();
+    return res;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     // console.error('Verification Error:', error);
