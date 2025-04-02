@@ -21,6 +21,7 @@ export async function GET(
         slug: slug,
       },
       include: {
+        category: true,
         images: true,
       },
     });

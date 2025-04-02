@@ -63,7 +63,7 @@ export async function POST(
       isArchived,
       description,
       shortDescription,
-      slug,
+      slugData,
       sku,
       stockQuantity,
       viewCount,
@@ -95,7 +95,7 @@ export async function POST(
     if (!shortDescription) {
       return new NextResponse("Billboard ID is required", { status: 400 });
     }
-    if (!slug) {
+    if (!slugData) {
       return new NextResponse("Billboard ID is required", { status: 400 });
     }
     if (!sku) {
@@ -120,7 +120,7 @@ export async function POST(
         description,
         shortDescription,
         sku,
-        slug,
+        slug: slugData,
         stockQuantity,
         name,
         price,

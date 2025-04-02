@@ -107,8 +107,9 @@ export const CategoryForm: React.FC<CategoryProps> = ({
       toast.success("Xóa Category thành công !!");
     } catch (err) {
       toast.error(
-        "Make sure you removed all products using this category first !!",
-        err
+        `Make sure you removed all products using this category first !! ${
+          err instanceof Error ? err.message : String(err)
+        }`
       );
     } finally {
       setLoading(false);
