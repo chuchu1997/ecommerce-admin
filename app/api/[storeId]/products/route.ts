@@ -14,6 +14,8 @@ export async function GET(
     const { searchParams } = new URL(req.url);
     const categoryId = searchParams.get("categoryId") || undefined;
     const isFeatured = searchParams.get("isFeatured");
+    const limit = parseInt(searchParams.get("limit") || "4"); // Mặc định 4 sản phẩm mỗi lần
+    const currentPage = parseInt(searchParams.get("currentPage") || "1"); // Trang mặc định là 1
 
     if (!storeId) {
       return new NextResponse("Store Id is required ", { status: 400 });
@@ -33,6 +35,8 @@ export async function GET(
       orderBy: {
         createAt: "desc",
       },
+      take: limit,
+      skip: (currentPage - 1) * limit,
     });
 
     return NextResponse.json(products, { status: 200 });

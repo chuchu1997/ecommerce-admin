@@ -6,7 +6,7 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-import { Billboard, Category } from "@prisma/client";
+import { Billboard, Subcategory, Category } from "@prisma/client";
 import { Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,13 +32,15 @@ import {
 } from "@/components/ui/select";
 
 interface CategoryProps {
-  initialData: Category | null;
+  initialData: Subcategory | null;
   billboards: Billboard[];
+  parentCategories: Category[];
 }
 
 const formSchema = z.object({
   name: z.string().min(1),
   billboardId: z.string().min(1),
+  parentCategoryId: z.string().min(1),
   slugData: z.string().min(1),
 });
 
@@ -46,15 +48,20 @@ type CategoryFormValues = z.infer<typeof formSchema>;
 
 export const CategoryForm: React.FC<CategoryProps> = ({
   initialData,
+  parentCategories,
   billboards,
 }) => {
   const params = useParams();
   const router = useRouter();
 
-  const title = initialData ? "Edit Category" : "Create Category";
-  const description = initialData ? "Edit a Category" : "Add a new Category";
-  const toastMessage = initialData ? "Category Update" : "Category created";
-  const action = initialData ? "Save change " : "Create Category";
+  const title = initialData ? "Edit Sub Category" : "Create Sub Category";
+  const description = initialData
+    ? "Edit a Sub Category"
+    : "Add a new Sub Category";
+  const toastMessage = initialData
+    ? "Sub Category Update"
+    : "Sub Category created";
+  const action = initialData ? "Save change " : "Create Sub Category";
 
   const [open, setOpen] = useState(false);
 
@@ -66,11 +73,13 @@ export const CategoryForm: React.FC<CategoryProps> = ({
           name: initialData.name,
           billboardId: initialData.billboardId,
           slugData: initialData.slug, // Map `slug` → `slugData`
+          parentCategoryId: initialData.categoryId,
         }
       : {
           name: "",
           billboardId: "",
           slugData: "",
+          parentCategoryId: "",
         },
   });
 
@@ -79,14 +88,14 @@ export const CategoryForm: React.FC<CategoryProps> = ({
       setLoading(true);
       if (initialData) {
         await axios.patch(
-          `/api/${params.storeId}/categories/${params.slug}`,
+          `/api/${params.storeId}/sub-categories/${params.slug}`,
           data
         );
       } else {
-        await axios.post(`/api/${params.storeId}/categories`, data);
+        await axios.post(`/api/${params.storeId}/sub-categories`, data);
       }
       router.refresh();
-      router.push(`/${params.storeId}/categories/`);
+      router.push(`/${params.storeId}/sub-categories/`);
       toast.success(toastMessage);
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -100,9 +109,11 @@ export const CategoryForm: React.FC<CategoryProps> = ({
     try {
       setLoading(true);
 
-      await axios.delete(`/api/${params.storeId}/categories/${params.slug}`);
+      await axios.delete(
+        `/api/${params.storeId}/sub-categories/${params.slug}`
+      );
       router.refresh();
-      toast.success("Xóa Category thành công !!");
+      toast.success("Xóa Sub Category thành công !!");
     } catch (err) {
       toast.error(
         `Make sure you removed all products using this category first !! ${
@@ -144,6 +155,40 @@ export const CategoryForm: React.FC<CategoryProps> = ({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className=" w-full">
           <div className="grid grid-cols-3 gap-8 mt-[15px]">
+            <FormField
+              control={form.control}
+              name="parentCategoryId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Chọn 1 Category Cha: </FormLabel>
+                  <Select
+                    disabled={loading}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder="Chọn 1 Category Cha "
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+
+                    <SelectContent>
+                      {parentCategories.map((parentCategory) => (
+                        <SelectItem
+                          key={parentCategory.id}
+                          value={parentCategory.id}>
+                          {parentCategory.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="name"
