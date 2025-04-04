@@ -16,6 +16,7 @@ export async function GET(
     const isFeatured = searchParams.get("isFeatured");
     const limit = parseInt(searchParams.get("limit") || "4"); // Mặc định 4 sản phẩm mỗi lần
     const currentPage = parseInt(searchParams.get("currentPage") || "1"); // Trang mặc định là 1
+    const subCategoryId = searchParams.get("subCategoryId") || undefined;
 
     if (!storeId) {
       return new NextResponse("Store Id is required ", { status: 400 });
@@ -27,10 +28,14 @@ export async function GET(
         categoryId,
         isFeatured: isFeatured ? true : undefined,
         isArchived: false,
+        subcategory: {
+          id: subCategoryId,
+        },
       },
       include: {
         images: true,
         category: true,
+        subcategory: true,
       },
       orderBy: {
         createAt: "desc",
@@ -61,6 +66,7 @@ export async function POST(
     const {
       name,
       categoryId,
+      subCategoryId,
       price,
       images,
       isFeatured,
@@ -79,34 +85,39 @@ export async function POST(
     }
 
     if (!categoryId) {
-      return new NextResponse("Billboard ID is required", { status: 400 });
+      return new NextResponse("Bắt buộc phải có phân loại", { status: 400 });
     }
 
     if (!storeId) {
       return new NextResponse("Store Id is required ", { status: 400 });
     }
     if (!price) {
-      return new NextResponse("Billboard ID is required", { status: 400 });
+      return new NextResponse("Bắt buộc phải nhập giá tiền ", { status: 400 });
     }
     if (!images || !images.length) {
-      return new NextResponse("Images is required", { status: 400 });
+      return new NextResponse("Bắt buộc phải có hình ảnh ", { status: 400 });
     }
 
     if (!description) {
-      return new NextResponse("Billboard ID is required", { status: 400 });
+      return new NextResponse("Bắt buộc phải có mô tả sản phẩm ", {
+        status: 400,
+      });
     }
 
     if (!shortDescription) {
-      return new NextResponse("Billboard ID is required", { status: 400 });
+      return new NextResponse("Bắt buộc phải có mô tả ngắn sản phẩm ", {
+        status: 400,
+      });
     }
     if (!slugData) {
-      return new NextResponse("Billboard ID is required", { status: 400 });
+      return new NextResponse("Bắt buộc phải có slug để tối ưu SEO", {
+        status: 400,
+      });
     }
     if (!sku) {
-      return new NextResponse("Billboard ID is required", { status: 400 });
-    }
-    if (!stockQuantity) {
-      return new NextResponse("Billboard ID is required", { status: 400 });
+      return new NextResponse("Bắt buộc phải có SKU để quản lý sản phẩm ", {
+        status: 400,
+      });
     }
 
     const storeByUserId = await prismadb.store.findFirst({
@@ -126,6 +137,7 @@ export async function POST(
         sku,
         slug: slugData,
         stockQuantity,
+        subcategoryId: subCategoryId ?? null,
         name,
         price,
         isFeatured,
@@ -141,13 +153,6 @@ export async function POST(
         },
       },
     });
-    // const category = await prismadb.category.create({
-    //   data: {
-    //     name: name,
-    //     billboardId: billboardId,
-    //     storeId: storeId,
-    //   },
-    // });
 
     return NextResponse.json(product, { status: 200 });
   } catch (err) {

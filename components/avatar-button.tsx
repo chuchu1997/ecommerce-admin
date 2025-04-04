@@ -28,7 +28,7 @@ const AvatarButton = (props: AvatarProps) => {
       toast.success("Thoát thành công ");
       router.refresh();
     } catch (err) {
-      toast.error("Thoát thất bại !!", err);
+      toast.error("Thoát thất bại !!");
     } finally {
       setLoading(false);
     }
@@ -47,7 +47,7 @@ const AvatarButton = (props: AvatarProps) => {
       />
       <Popover>
         <PopoverTrigger asChild>
-          <Avatar className={cn("cursor-pointer", className)}>
+          <Avatar className={cn("cursor-pointer ", className)}>
             <AvatarFallback className="p-2">AD</AvatarFallback>
           </Avatar>
         </PopoverTrigger>

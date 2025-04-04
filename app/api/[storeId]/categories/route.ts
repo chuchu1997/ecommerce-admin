@@ -21,7 +21,12 @@ export async function GET(
         storeId: storeId,
       },
       include: {
-        subcategories: true,
+        billboard: true,
+        subcategories: {
+          include: {
+            billboard: true,
+          },
+        },
       },
     });
 

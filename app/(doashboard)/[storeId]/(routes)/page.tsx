@@ -1,3 +1,4 @@
+import { ChartComponent } from "@/components/chart";
 import prismadb from "@/lib/primadb";
 
 
@@ -25,7 +26,7 @@ const DashboardPage:React.FC<DashboardPageProps> = async({
 
   return <div>
 
-    Active Store: {store?.name}
+    <ChartComponent/>
   </div>
 }
 

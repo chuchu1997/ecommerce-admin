@@ -206,10 +206,13 @@ model Billboard{
   imageUrl String
   category Category[]
   subCategory Subcategory[]
+  isActiveBanner Boolean @default(false)
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt
   @@index([storeId])
 }
+
+
 
  enum Role {
   USER

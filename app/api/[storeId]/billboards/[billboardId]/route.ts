@@ -36,7 +36,7 @@ export async function PATCH(
   try {
     const user = await getCurrentUser();
     const body = await req.json();
-    const { label, imageUrl } = body;
+    const { label, imageUrl, isActiveBanner } = body;
 
     const { storeId, billboardId } = await params;
     if (!user) {
@@ -72,6 +72,7 @@ export async function PATCH(
       data: {
         label: label,
         imageUrl: imageUrl,
+        isActiveBanner: isActiveBanner,
       },
     });
     return NextResponse.json(billboard);

@@ -16,6 +16,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormDescription,
   FormControl,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -26,6 +27,7 @@ import { AlertModal } from "@/components/modals/alert-modal";
 import { ApiAlert } from "@/components/ui/api-alert";
 import { userOrigin } from "@/hooks/use-origin";
 import ImageUpload from "@/components/ui/image-upload";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface BillboardsProps {
   initialData: Billboard | null;
@@ -34,6 +36,7 @@ interface BillboardsProps {
 const formSchema = z.object({
   label: z.string().min(1),
   imageUrl: z.string().min(1),
+  isActiveBanner: z.boolean(),
 });
 
 type BillboardsFormValues = z.infer<typeof formSchema>;
@@ -61,6 +64,7 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
   const form = useForm<BillboardsFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
+      isActiveBanner: false,
       label: "",
       imageUrl: "",
     },
@@ -125,8 +129,7 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
             disabled={loading}
             onClick={async () => {
               setOpen(true);
-            }}
-          >
+            }}>
             <Trash className="w-4 h-4 "></Trash>
           </Button>
         )}
@@ -147,8 +150,7 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
                     disabled={loading}
                     onChange={(url) => field.onChange(url)}
                     onRemove={() => field.onChange("")}
-                    value={field.value ? [field.value] : []}
-                  ></ImageUpload>
+                    value={field.value ? [field.value] : []}></ImageUpload>
                 </FormControl>
               </FormItem>
             )}
@@ -164,9 +166,28 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
                     <Input
                       disabled={loading}
                       {...field}
-                      placeholder="Billboard Label  "
-                    ></Input>
+                      placeholder="Billboard Label  "></Input>
                   </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="isActiveBanner"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormControl>
+                    <Checkbox
+                      onCheckedChange={field.onChange}
+                      checked={field.value}></Checkbox>
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Is Active Banner</FormLabel>
+                    <FormDescription>
+                      Check this if you want to use this billboard as a banner
+                    </FormDescription>
+                  </div>
                 </FormItem>
               )}
             />

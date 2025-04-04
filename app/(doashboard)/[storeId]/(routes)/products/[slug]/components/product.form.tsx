@@ -6,7 +6,11 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-import { Category, Product, Image } from "@prisma/client";
+import { Category as PrismaCategory, Product, Image } from "@prisma/client";
+
+interface Category extends PrismaCategory {
+  subcategories?: { id: string; name: string }[];
+}
 import { Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,7 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ImageUpload from "@/components/ui/image-upload";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
@@ -50,12 +54,14 @@ const formSchema = z.object({
   shortDescription: z.string().min(1),
   slugData: z.string().min(1),
   sku: z.string().min(1),
-  stockQuantity: z.coerce.number().min(1),
+  stockQuantity: z.coerce.number(),
 
   //IS OPTIONAL
 
   viewCount: z.coerce.number().default(0).optional(),
   ratingCount: z.coerce.number().default(5).optional(),
+
+  subCategoryId: z.string().optional(),
 });
 interface ProductProps {
   initialData:
@@ -89,7 +95,7 @@ export const ProductForm: React.FC<ProductProps> = ({
       ? {
           ...initialData,
           price: parseFloat(String(initialData.price)),
-
+          subCategoryId: initialData.subcategoryId ?? "",
           slugData: initialData.slug,
         }
       : {
@@ -97,21 +103,43 @@ export const ProductForm: React.FC<ProductProps> = ({
           categoryId: "",
           price: 0,
           images: [],
+          subCategoryId: "",
           isFeatured: false,
           isArchived: false,
           description: "",
           shortDescription: "",
           slugData: "",
           sku: "",
-          stockQuantity: 1,
+          stockQuantity: 0,
           viewCount: 0,
           ratingCount: 5,
         },
   });
 
-  const onSubmit = async (data: ProductFormValues) => {
-    console.log(form.formState.errors);
+  //HANDLE FOR SUBCATEGORIES
 
+  const [subcategories, setSubcategories] = useState<
+    { id: string; name: string }[]
+  >(
+    initialData?.categoryId
+      ? categories.find((category) => category.id === initialData.categoryId)
+          ?.subcategories || []
+      : []
+  );
+
+  useEffect(() => {
+    const selectedCategory = categories.find(
+      (category) => category.id === form.watch("categoryId")
+    );
+    if (selectedCategory) {
+      setSubcategories(selectedCategory?.subcategories || []);
+      if (selectedCategory?.subcategories?.length === 0) {
+        form.setValue("subCategoryId", "");
+      }
+    }
+  }, [form.watch("categoryId"), categories]);
+
+  const onSubmit = async (data: ProductFormValues) => {
     try {
       setLoading(true);
       if (initialData) {
@@ -304,6 +332,22 @@ export const ProductForm: React.FC<ProductProps> = ({
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="sku"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>SKU </FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      {...field}
+                      placeholder="SKU  "></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="categoryId"
@@ -338,16 +382,36 @@ export const ProductForm: React.FC<ProductProps> = ({
 
             <FormField
               control={form.control}
-              name="sku"
+              name="subCategoryId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>SKU </FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={loading}
-                      {...field}
-                      placeholder="SKU  "></Input>
-                  </FormControl>
+                  <FormLabel>Sub Category</FormLabel>
+                  <Select
+                    disabled={
+                      categories.find(
+                        (category) => category.id === form.watch("categoryId")
+                      )?.subcategories?.length === 0
+                    } // Disable nếu không có subcategories
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder="Select a sub category"
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+
+                    <SelectContent>
+                      {subcategories.map((subcategory) => (
+                        <SelectItem key={subcategory.id} value={subcategory.id}>
+                          {subcategory.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />

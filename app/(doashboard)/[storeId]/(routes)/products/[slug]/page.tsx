@@ -23,8 +23,13 @@ const ProductPage = async (props: ProductPageProps) => {
   const categories = await prismadb.category.findMany({
     where:{
         storeId:storeId
+    },
+    include:{
+      subcategories:true
     }
   })
+  
+
 
   const product = await prismadb.product.findUnique({
     where: {

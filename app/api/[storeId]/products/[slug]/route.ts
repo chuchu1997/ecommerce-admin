@@ -23,6 +23,7 @@ export async function GET(
       include: {
         category: true,
         images: true,
+        subcategory: true,
       },
     });
 
@@ -48,6 +49,7 @@ export async function PATCH(
       isFeatured,
       isArchived,
       description,
+      subCategoryId,
       shortDescription,
       slugData,
       sku,
@@ -56,6 +58,7 @@ export async function PATCH(
       ratingCount,
     } = body;
     const { storeId, slug } = await params;
+
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
@@ -87,9 +90,6 @@ export async function PATCH(
     if (!sku) {
       return new NextResponse("Billboard ID is required", { status: 400 });
     }
-    if (!stockQuantity) {
-      return new NextResponse("Billboard ID is required", { status: 400 });
-    }
 
     const storeByUserId = await prismadb.store.findMany({
       where: {
@@ -113,6 +113,7 @@ export async function PATCH(
         stockQuantity,
         name,
         price,
+        subcategoryId: subCategoryId ?? null,
         isFeatured,
         isArchived,
         categoryId,
@@ -140,6 +141,7 @@ export async function PATCH(
         stockQuantity,
         name,
         price,
+        subcategoryId: subCategoryId ?? null,
         isFeatured,
         isArchived,
         categoryId,

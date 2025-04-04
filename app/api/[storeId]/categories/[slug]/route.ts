@@ -10,6 +10,7 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
+
     if (!slug) {
       return new NextResponse("Slug is required ", { status: 400 });
     }
@@ -20,6 +21,11 @@ export async function GET(
       include: {
         billboard: true,
         products: true,
+        subcategories: {
+          include: {
+            billboard: true,
+          },
+        },
       },
     });
 

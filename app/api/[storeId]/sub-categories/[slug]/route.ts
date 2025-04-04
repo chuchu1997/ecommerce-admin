@@ -10,6 +10,7 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
+
     if (!slug) {
       return new NextResponse("Slug is required ", { status: 400 });
     }
@@ -19,10 +20,14 @@ export async function GET(
       },
       include: {
         billboard: true,
-        products: true,
+        products: {
+          include: {
+            images: true,
+          },
+        },
+        category: true,
       },
     });
-
     return NextResponse.json(subCategogy, { status: 200 });
   } catch (err) {
     console.log("[SUB_CATEGORY_GET_ID]", err);

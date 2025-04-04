@@ -19,6 +19,7 @@ const ProductPage = async (props: CategoriesPageProps) => {
     include: {
       images:true,
       category: true,
+      subcategory:true,
     },
     orderBy: {
       createAt: "desc",
@@ -28,6 +29,7 @@ const ProductPage = async (props: CategoriesPageProps) => {
   const formatProductsColumn: ProductColumn[] = products.map((item) => ({
 
     id: item.id,
+    subCategory: item.subcategory?.name ?? '',
     imageUrl: item.images[0]?.url ?? '',
     name: item.name,
     createAt: format(item.createAt, "MMMM do,yyyy"),
@@ -36,14 +38,14 @@ const ProductPage = async (props: CategoriesPageProps) => {
     sku: item.sku || "",
     category: item.category.name,
     price:Number(item.price),
-    slug:item.slug
+    slug:item.slug,
+    stock:item.stockQuantity
     
   }));
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
         <ProductClient data={formatProductsColumn} />
-        {/* <BillboardClient data={formatBillboardColumn} /> */}
       </div>
     </div>
   );

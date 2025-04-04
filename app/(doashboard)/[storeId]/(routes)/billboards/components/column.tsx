@@ -12,6 +12,7 @@ export type BillboardColumn = {
   label: string;
   createAt: string;
   imageUrl: string;
+  isActiveBanner: boolean;
 };
 
 export const columns: ColumnDef<BillboardColumn>[] = [
@@ -34,6 +35,12 @@ export const columns: ColumnDef<BillboardColumn>[] = [
       </div>
     ),
   },
+
+  {
+    accessorKey: "isActiveBanner",
+    header: "Is Banner",
+  },
+
   {
     accessorKey: "createAt",
     header: "Date",

@@ -18,6 +18,8 @@ export type ProductColumn = {
   category: string;
   price: number;
   slug: string;
+  subCategory: string;
+  stock: number;
 };
 
 export const columns: ColumnDef<ProductColumn>[] = [
@@ -48,7 +50,17 @@ export const columns: ColumnDef<ProductColumn>[] = [
   {
     accessorKey: "category",
     header: "Category",
-    cell: ({ row }) => row.original.category,
+    cell: ({ row }) => (
+      <div className="capitalize">{row.original.category}</div>
+    ),
+  },
+
+  {
+    accessorKey: "subCategory",
+    header: "SubCategory",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.original.subCategory}</div>
+    ),
   },
 
   {
@@ -67,16 +79,15 @@ export const columns: ColumnDef<ProductColumn>[] = [
     accessorKey: "isFeatured",
     header: "IsFeatured",
   },
-  {
-    accessorKey: "isArchieved",
-    header: "IsArchieved",
-  },
 
   {
     accessorKey: "createAt",
     header: "Date",
   },
-
+  {
+    accessorKey: "stock",
+    header: "Stock",
+  },
   {
     header: "Actions",
     id: "actions",

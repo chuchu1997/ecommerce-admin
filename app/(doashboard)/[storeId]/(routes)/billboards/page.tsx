@@ -19,10 +19,12 @@ const BillboardsPage = async (props: BillboardPageProps) => {
       createAt: "desc",
     },
   });
+  
 
   const formatBillboardColumn: BillboardColumn[] = billboards.map((item) => ({
     imageUrl:item.imageUrl,
     id: item.id,
+    isActiveBanner:item.isActiveBanner,
     label: item.label,
     createAt: format(item.createAt, "MMMM do,yyyy"),
   }));

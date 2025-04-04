@@ -20,6 +20,10 @@ export async function GET(
       where: {
         storeId: storeId,
       },
+      include: {
+        category: true,
+        billboard: true,
+      },
     });
 
     return NextResponse.json(subCategories, { status: 200 });

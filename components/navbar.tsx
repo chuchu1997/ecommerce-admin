@@ -16,13 +16,12 @@ const Navbar = async () => {
         }
     });
   return (
-    <div className="border-b">
+    <div className="">
       <div className="container mx-auto">
         <div className="flex h-16 items-center justify-between px-4">
           <StoreSwitcher items = {stores}></StoreSwitcher>
-          <MainNav className="mx-8" />
-        
-          <AvatarButton className = "hidden md:block" />
+          {/* <MainNav className="mx-8" /> */}
+          {/* <AvatarButton className = "hidden md:block" /> */}
         </div>
       </div>
     </div>

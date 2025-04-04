@@ -21,7 +21,7 @@ export const columns: ColumnDef<CategoryColumn>[] = [
   {
     accessorKey: "name",
     header: "Name",
-    cell: ({ row }) => row.original.name,
+    cell: ({ row }) => <div className = "capitalize font-semibold">{row.original.name}</div>,
   },
 
   {
