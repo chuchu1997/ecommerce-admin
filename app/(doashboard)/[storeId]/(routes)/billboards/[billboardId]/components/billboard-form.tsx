@@ -47,10 +47,12 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
 
   const [isReady, setIsReady] = useState(false);
 
-  const title = initialData ? "Edit billboard" : "Create billboard ";
-  const description = initialData ? "Edit a billboard" : "Add a new billboard";
-  const toastMessage = initialData ? "Billboard Update" : "Billboard created";
-  const action = initialData ? "Save change " : "Create Billboard";
+  const title = initialData ? "Chỉnh sửa hình ảnh" : "Tạo hình ảnh  ";
+  const description = initialData
+    ? "Chỉnh sửa hình ảnh "
+    : "Tạo 1 hình ảnh mới ";
+  const toastMessage = initialData ? "Đã Chỉnh Sửa " : "Đã Tạo mới ";
+  const action = initialData ? "Lưu Thay Đổi " : "Tạo mới hình ảnh";
   useEffect(() => {
     if (params.storeId) {
       setIsReady(true);
@@ -129,7 +131,8 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
             disabled={loading}
             onClick={async () => {
               setOpen(true);
-            }}>
+            }}
+          >
             <Trash className="w-4 h-4 "></Trash>
           </Button>
         )}
@@ -144,13 +147,14 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
             name="imageUrl"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Background Image </FormLabel>
+                <FormLabel>Chọn Hình Ảnh </FormLabel>
                 <FormControl>
                   <ImageUpload
                     disabled={loading}
                     onChange={(url) => field.onChange(url)}
                     onRemove={() => field.onChange("")}
-                    value={field.value ? [field.value] : []}></ImageUpload>
+                    value={field.value ? [field.value] : []}
+                  ></ImageUpload>
                 </FormControl>
               </FormItem>
             )}
@@ -161,12 +165,13 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
               name="label"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Label </FormLabel>
+                  <FormLabel>Tên hình </FormLabel>
                   <FormControl>
                     <Input
                       disabled={loading}
                       {...field}
-                      placeholder="Billboard Label  "></Input>
+                      placeholder="Tên hình   "
+                    ></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -180,12 +185,13 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
                   <FormControl>
                     <Checkbox
                       onCheckedChange={field.onChange}
-                      checked={field.value}></Checkbox>
+                      checked={field.value}
+                    ></Checkbox>
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>Is Active Banner</FormLabel>
+                    <FormLabel>Được hiển thị ở Banner ? </FormLabel>
                     <FormDescription>
-                      Check this if you want to use this billboard as a banner
+                      (Nếu check vào thì hình ảnh này được hiển thị ở Banner )
                     </FormDescription>
                   </div>
                 </FormItem>

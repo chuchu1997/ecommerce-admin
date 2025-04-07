@@ -11,25 +11,22 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
-
     if (!slug) {
-      return new NextResponse("Product Id is required ", { status: 400 });
+      return new NextResponse("SERVICE SLUG is required ", { status: 400 });
     }
-
-    const product = await prismadb.product.findUnique({
+    const service = await prismadb.service.findUnique({
       where: {
         slug: slug,
       },
       include: {
-        category: true,
         images: true,
+        category: true,
         subcategory: true,
       },
     });
-
-    return NextResponse.json(product, { status: 200 });
+    return NextResponse.json(service, { status: 200 });
   } catch (err) {
-    console.log("[PRODUCT_GET_ID]", err);
+    console.log("[SERVICE_GET_ID]", err);
     return new NextResponse("Interal error", { status: 500 });
   }
 }
@@ -46,33 +43,27 @@ export async function PATCH(
       categoryId,
       price,
       images,
-      isFeatured,
-      isArchived,
       description,
       subCategoryId,
-      shortDescription,
       slugData,
-      sku,
-      stockQuantity,
-      viewCount,
-      ratingCount,
     } = body;
     const { storeId, slug } = await params;
+
+    console.log("SLUG", slug);
+    console.log("SLUGDATA", slugData);
 
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
     if (!categoryId) {
-      return new NextResponse("Billboard ID is required", { status: 400 });
+      return new NextResponse("category ID is required", { status: 400 });
     }
 
     if (!storeId) {
       return new NextResponse("Store Id is required ", { status: 400 });
     }
-    if (!price) {
-      return new NextResponse("Billboard ID is required", { status: 400 });
-    }
+
     if (!images || !images.length) {
       return new NextResponse("Images is required", { status: 400 });
     }
@@ -81,13 +72,7 @@ export async function PATCH(
       return new NextResponse("Billboard ID is required", { status: 400 });
     }
 
-    if (!shortDescription) {
-      return new NextResponse("Billboard ID is required", { status: 400 });
-    }
     if (!slug) {
-      return new NextResponse("Billboard ID is required", { status: 400 });
-    }
-    if (!sku) {
       return new NextResponse("Billboard ID is required", { status: 400 });
     }
 
@@ -101,24 +86,17 @@ export async function PATCH(
       return new NextResponse("Forbinden", { status: 403 });
     }
 
-    await prismadb.product.update({
+    await prismadb.service.update({
       where: {
         slug: slug,
       },
       data: {
         description,
-        shortDescription,
-        sku,
         slug: slug,
-        stockQuantity,
         name,
-        price,
+        price: price ?? 0,
         subcategoryId: subCategoryId ?? null,
-        isFeatured,
-        isArchived,
         categoryId,
-        viewCount,
-        ratingCount,
         storeId: storeId,
         images: {
           deleteMany: {},
@@ -129,24 +107,23 @@ export async function PATCH(
       },
     });
 
-    const product = await prismadb.product.update({
+    console.log("HELLO !!");
+
+    const service = await prismadb.service.update({
       where: {
         slug: slug,
       },
       data: {
         description,
-        shortDescription,
-        sku,
+
         slug: slugData,
-        stockQuantity,
+
         name,
-        price,
+        price: price ?? 0,
         subcategoryId: subCategoryId ?? null,
-        isFeatured,
-        isArchived,
+
         categoryId,
-        viewCount,
-        ratingCount,
+
         storeId: storeId,
         images: {
           createMany: {
@@ -155,10 +132,10 @@ export async function PATCH(
         },
       },
     });
-    return NextResponse.json(product);
+    return NextResponse.json(service);
     // return NextResponse.json(store);
   } catch (err) {
-    console.log("[PRODUCT_PATCH]", err);
+    console.log("[SERVICE_PATCH]", err);
     return new NextResponse("Internal error", { status: 500 });
   }
 }
@@ -191,13 +168,13 @@ export async function DELETE(
       return new NextResponse("Forbiden", { status: 403 });
     }
 
-    const product = await prismadb.product.deleteMany({
+    const service = await prismadb.service.deleteMany({
       where: {
         slug: slug,
         storeId: storeId,
       },
     });
-    return NextResponse.json(product);
+    return NextResponse.json(service);
   } catch (err) {
     console.log("[STORE_DELETE]", err);
     return new NextResponse("Internal error", { status: 500 });

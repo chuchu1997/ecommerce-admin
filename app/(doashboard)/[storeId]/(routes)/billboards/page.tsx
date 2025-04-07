@@ -1,7 +1,7 @@
 import prismadb from "@/lib/primadb";
 import { BillboardClient } from "./components/client";
 import { BillboardColumn } from "./components/column";
-import { format } from "date-fns"
+import { format } from "date-fns";
 interface BillboardPageProps {
   params: Promise<{ storeId: string }>;
 }
@@ -19,14 +19,13 @@ const BillboardsPage = async (props: BillboardPageProps) => {
       createAt: "desc",
     },
   });
-  
 
   const formatBillboardColumn: BillboardColumn[] = billboards.map((item) => ({
-    imageUrl:item.imageUrl,
+    imageUrl: item.imageUrl,
     id: item.id,
-    isActiveBanner:item.isActiveBanner,
+    isActiveBanner: item.isActiveBanner,
     label: item.label,
-    createAt: format(item.createAt, "MMMM do,yyyy"),
+    createAt: format(item.createAt, "dd/MM/yyyy"),
   }));
   return (
     <div className="flex flex-col">

@@ -8,7 +8,6 @@ interface BillboardPageProps {
 const BillboardPage = async (props: BillboardPageProps) => {
   const { params } = props;
   const { billboardId } = await params;
-  console.log("BILL CALL",billboardId);
   const billboards = await prismadb.billboard.findUnique({
     where: {
       id: billboardId,

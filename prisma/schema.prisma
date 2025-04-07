@@ -40,9 +40,14 @@ model Store {
   sizes Size[] @relation("StoreToSize")
   colors Color[] @relation("StoreToColor")
   subCategories Subcategory[] @relation("StoreToSubCategory")
+  Service Service[] @relation("StoreToService")
 
 
 }
+
+
+
+
 
 model Category{
 
@@ -56,6 +61,8 @@ model Category{
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt
   products Product[]  @relation("CategoryToProduct")
+
+  services Service[] @relation("CategoryToProduct")
   subcategories Subcategory[]
   @@index([storeId])
     @@index([billboardId])
@@ -79,7 +86,7 @@ model Subcategory {
   storeId String 
   store Store @relation("StoreToSubCategory",fields: [storeId],references: [id])
 
-
+  services Service[]
   // Relation to Product
   products   Product[]
   @@index([categoryId])
@@ -89,40 +96,36 @@ model Subcategory {
 
 
 
-model Product {
-  id String @id @default(uuid())
- 
-  name String @unique
-  price Float
-  isFeatured Boolean @default(false)
-  isArchived Boolean @default(false)
-  description String
-  shortDescription String
-  images Image[]
-  createAt DateTime @default(now())
-  updateAt DateTime @updatedAt
-  slug String @unique
-  sku String
-  viewCount Int @default(0)
-  ratingCount Int @default(0)
- 
-  //RELATIONS 
+
+
+model Size { 
+   id String @id @default(uuid())
+   description String?
+   name String
+
    storeId String
-  store Store @relation("StoreToProduct",fields: [storeId],references: [id])
-  categoryId String
-  category Category  @relation("CategoryToProduct",fields: [categoryId],references: [id])
- 
-    subcategoryId String?
-  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
-  productSizes ProductSize[]
-  productColors ProductColor[]
-
-  stockQuantity Int
-      @@index([storeId])
-      @@index([categoryId])
-        @@index([subcategoryId])
-
+   store Store @relation("StoreToSize",fields: [storeId],references: [id])
+    productSize ProductSize[]
+   createAt DateTime @default(now())
+   updateAt DateTime @updatedAt
+    
+   @@index([storeId])
 }
+model Color {
+  id        String   @id @default(uuid())
+  name      String   // e.g., "Red", "Blue", "Green", etc.
+  hexCode   String?  // Optional hex color code (e.g., "#FF0000")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  storeId String
+  store Store @relation("StoreToColor",fields:[storeId],references: [id])
+  // Relation to Product model
+  productColor ProductColor[]
+ 
+  @@index([storeId])
+}
+
 
 //DAY LA BANG TRUNG GIAN MOI QHE 1-1 SIZE + PRODUCT
 model ProductSize {
@@ -160,43 +163,79 @@ model ProductColor{
   @@index([colorId])
 }
 
-model Size { 
-   id String @id @default(uuid())
-   description String?
-   name String
-
-   storeId String
-   store Store @relation("StoreToSize",fields: [storeId],references: [id])
-    productSize ProductSize[]
-   createAt DateTime @default(now())
-   updateAt DateTime @updatedAt
-    
-   @@index([storeId])
-}
-model Color {
-  id        String   @id @default(uuid())
-  name      String   // e.g., "Red", "Blue", "Green", etc.
-  hexCode   String?  // Optional hex color code (e.g., "#FF0000")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  storeId String
-  store Store @relation("StoreToColor",fields:[storeId],references: [id])
-  // Relation to Product model
-  productColor ProductColor[]
+model Product {
+  id String @id @default(uuid())
  
-  @@index([storeId])
+  name String @unique
+  price Float
+  isFeatured Boolean @default(false)
+  isArchived Boolean @default(false)
+  description String
+  shortDescription String
+  images Image[]
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+  slug String @unique
+  sku String
+  viewCount Int @default(0)
+  ratingCount Int @default(0)
+ 
+  //RELATIONS 
+   storeId String
+  store Store @relation("StoreToProduct",fields: [storeId],references: [id])
+  categoryId String
+  category Category  @relation("CategoryToProduct",fields: [categoryId],references: [id])
+ subcategoryId String?
+  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
+  productSizes ProductSize[]
+  productColors ProductColor[]
+
+  stockQuantity Int
+      @@index([storeId])
+      @@index([categoryId])
+        @@index([subcategoryId])
+
 }
+
+
+
+model Service {
+  id String @id @default(uuid())
+  name String
+  description String
+  price Float?
+  slug String @unique
+  isActive Boolean @default(true)
+  createAt DateTime @default(now())
+  images Image[]
+  imageId   String?  @unique  // Bảo đảm một Service chỉ có một Image
+  updateAt DateTime @updatedAt
+  storeId String
+  categoryId String
+  category Category  @relation("CategoryToProduct",fields: [categoryId],references: [id])
+  subcategoryId String?
+  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
+
+  store Store @relation("StoreToService",fields: [storeId],references: [id])
+  @@index([storeId])
+  @@index([categoryId])
+  @@index([subcategoryId])
+}
+
 
 
 model Image { 
   id String @id @default(uuid())
-  productId String
-  product Product @relation(fields: [productId],references: [id],onDelete: Cascade)
+  productId String?
+  product Product? @relation(fields: [productId],references: [id],onDelete: Cascade)
+  serviceId String?
+  service Service? @relation(fields: [serviceId],references: [id],onDelete: Cascade)
   url String
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt
   @@index([productId])
+
+  @@index([serviceId])
 }
 model Billboard{
   id String @id @default(uuid())

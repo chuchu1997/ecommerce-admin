@@ -4,11 +4,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
+import { ServiceColumn } from "./column";
+import {
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { BillboardColumn } from "./column";
-
+} from "@radix-ui/react-dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
 import toast from "react-hot-toast";
@@ -18,29 +19,31 @@ import axios from "axios";
 import { AlertModal } from "@/components/modals/alert-modal";
 
 interface CellActionProps {
-  data: BillboardColumn;
+  data: ServiceColumn;
 }
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const router = useRouter();
   const params = useParams();
+
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
   const onCopy = (id: string) => {
     navigator.clipboard.writeText(id);
-    toast.success("Copy Billboard ID Thành Công");
+    toast.success("Copy Dịch vụ  ID Thành Công");
   };
-  const onEdit = (id: string) => {
-    router.push(`/${params.storeId}/billboards/${id}`);
+  const onEdit = () => {
+    router.push(`/${params.storeId}/services/${data.slug}`);
   };
-  const onDelete = async (id: string) => {
+  const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/${params.storeId}/billboards/${id}`);
+      await axios.delete(`/api/${params.storeId}/services/${data.slug}`);
+
       router.refresh();
-      toast.success("Xoá billboard thành công !!");
+      toast.success("Xoá Dịch vụ thành công !!");
     } catch (err) {
-      toast.error("Something went wrong !!");
+      toast.error("Có lỗi ở đâu đó !! Vui lòng thử lại sau !!");
     } finally {
       setLoading(false);
     }
@@ -52,13 +55,13 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         isOpen={open}
         onClose={() => setOpen(false)}
         onConfirm={() => {
-          onDelete(data.id);
+          onDelete();
         }}
       />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant={"ghost"} size={"icon"} className="h-8 w-8 p-0">
-            <span className="sr-only">Open Menu</span>
+            <span className="sr-only">Mở menu </span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -69,11 +72,11 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
             onClick={() => onCopy(data.id)}
           >
             <Copy className="mr-2 h-4 w-4" />
-            <span className="text-sm font-base">Copy ID </span>
+            <span className="text-sm font-base">Copy ID</span>
           </DropdownMenuItem>
           <DropdownMenuItem
             className="flex items-center mb-2 cursor-pointer"
-            onClick={() => onEdit(data.id)}
+            onClick={() => onEdit()}
           >
             <Edit className="mr-2 h-4 w-4" />
             <span>Chỉnh sửa</span>

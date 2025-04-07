@@ -21,6 +21,7 @@ export async function GET(
       include: {
         billboard: true,
         products: true,
+        services: true,
         subcategories: {
           include: {
             billboard: true,

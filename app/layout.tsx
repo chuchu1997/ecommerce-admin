@@ -5,7 +5,7 @@ import { ModalProvider } from "@/providers/modal-provider";
 import { AppSidebar } from "@/components/app-sidebar";
 
 import { ToastProvider } from "@/providers/toast-provider";
-import { SidebarProvider ,SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -33,18 +33,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SidebarProvider>
-          <AppSidebar/>
         <ToastProvider />
-          <ModalProvider />
-          <SidebarTrigger />
-          <div className = " w-full overflow-x-hidden">
-          {children}
-          </div>
-          
-        </SidebarProvider>
-         
-   
+        <ModalProvider />
+        <div className=" w-full overflow-x-hidden">{children}</div>
       </body>
     </html>
   );

@@ -5,24 +5,34 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-action";
 import Image from "next/image";
+
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type BillboardColumn = {
+export type ServiceColumn = {
   id: string;
-  label: string;
-  createAt: string;
   imageUrl: string;
-  isActiveBanner: boolean;
+  name: string;
+  description: string;
+  createAt: string;
+  updateAt: string;
+  slug: string;
+  category: string;
+  subCategory: string;
 };
 
-export const columns: ColumnDef<BillboardColumn>[] = [
+export const columns: ColumnDef<ServiceColumn>[] = [
   {
-    accessorKey: "label",
-    header: "Tên hình",
+    accessorKey: "name",
+    header: "Tên dịch vụ",
+    cell: ({ row }) => row.original.name,
   },
-
   {
-    accessorKey: "imageUrl",
+    accessorKey: "description",
+    header: "Mô tả",
+    cell: ({ row }) => row.original.description,
+  },
+  {
+    accessorKey: "image",
     header: "Hình ảnh ",
     cell: ({ row }) => (
       <div className="relative w-[80px] h-[80px] ">
@@ -36,22 +46,30 @@ export const columns: ColumnDef<BillboardColumn>[] = [
       </div>
     ),
   },
-
   {
-    accessorKey: "isActiveBanner",
-    header: "Hiển thị ở banner",
-    cell: ({ row }) => (
-      <div className="font-semibold italic ">
-        {row.original.isActiveBanner ? "Có hiển thị" : "Không hiển thị "}
-      </div>
-    ),
+    accessorKey: "slug",
+    header: "Slug",
   },
 
+  {
+    accessorKey: "category",
+    header: "Thuộc danh mục",
+  },
+
+  {
+    accessorKey: "subCategory",
+    header: "Danh mục con",
+  },
   {
     accessorKey: "createAt",
     header: "Ngày tạo",
   },
   {
+    accessorKey: "updateAt",
+    header: "Ngày cập nhật",
+  },
+  {
+    header: "Actions",
     id: "actions",
     cell: ({ row }) => <CellAction data={row.original} />,
   },
