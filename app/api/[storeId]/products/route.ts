@@ -3,6 +3,7 @@
 import { getCurrentUser } from "@/lib/auth/utils";
 import prismadb from "@/lib/primadb";
 import { NextResponse } from "next/server";
+import { Size } from "@prisma/client";
 
 export async function GET(
   req: Request,
@@ -78,6 +79,8 @@ export async function POST(
       stockQuantity,
       viewCount,
       ratingCount,
+      sizes,
+      colors,
     } = body;
 
     if (!user) {
@@ -153,6 +156,12 @@ export async function POST(
         },
       },
     });
+    if (sizes && sizes.length > 0) {
+      await createProductWithSizes(product.id, sizes);
+    }
+    if (colors && colors.length > 0) {
+      await createProductWithColors(product.id, colors);
+    }
 
     return NextResponse.json(product, { status: 200 });
   } catch (err) {
@@ -160,3 +169,54 @@ export async function POST(
     return new NextResponse("Interal error", { status: 500 });
   }
 }
+
+type SizesForProduct = {
+  sizeId: string;
+  price: number;
+  stockQuantity: number;
+};
+
+type ColorsForProduct = {
+  colorId: string;
+  price: number;
+  stockQuantity: number;
+};
+
+const createProductWithSizes = async (
+  productID: string,
+  sizes: SizesForProduct[]
+) => {
+  await Promise.all(
+    sizes.map(async (size) => {
+      const { sizeId, price, stockQuantity } = size;
+      // Tạo mới bản ghi trong bảng productSize
+      await prismadb.productSize.create({
+        data: {
+          productId: productID,
+          sizeId,
+          price,
+          stockQuantity,
+        },
+      });
+    })
+  );
+};
+const createProductWithColors = async (
+  productID: string,
+  colors: ColorsForProduct[]
+) => {
+  await Promise.all(
+    colors.map(async (colors) => {
+      const { colorId, price, stockQuantity } = colors;
+      // Tạo mới bản ghi trong bảng productSize
+      await prismadb.productColor.create({
+        data: {
+          productId: productID,
+          colorId,
+          price,
+          stockQuantity,
+        },
+      });
+    })
+  );
+};

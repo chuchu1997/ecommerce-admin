@@ -96,21 +96,6 @@ model Subcategory {
 
 
 
-
-
-model Size { 
-   id String @id @default(uuid())
-   description String?
-   name String
-
-   storeId String
-   store Store @relation("StoreToSize",fields: [storeId],references: [id])
-    productSize ProductSize[]
-   createAt DateTime @default(now())
-   updateAt DateTime @updatedAt
-    
-   @@index([storeId])
-}
 model Color {
   id        String   @id @default(uuid())
   name      String   // e.g., "Red", "Blue", "Green", etc.
@@ -125,8 +110,18 @@ model Color {
  
   @@index([storeId])
 }
-
-
+model Size { 
+   id String @id @default(uuid())
+   description String?
+   name String
+   storeId String
+   store Store @relation("StoreToSize",fields: [storeId],references: [id])
+    productSize ProductSize[]
+   createAt DateTime @default(now())
+   updateAt DateTime @updatedAt
+    
+   @@index([storeId])
+}
 //DAY LA BANG TRUNG GIAN MOI QHE 1-1 SIZE + PRODUCT
 model ProductSize {
    productId String
@@ -144,6 +139,39 @@ model ProductSize {
 
   @@index([sizeId])
 }
+
+model Product {
+  id String @id @default(uuid())
+  name String @unique
+  price Float
+  isFeatured Boolean @default(false)
+  isArchived Boolean @default(false)
+  description String
+  shortDescription String
+  images Image[]
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+  slug String @unique
+  sku String
+  viewCount Int @default(0)
+  ratingCount Int @default(0)
+  //RELATIONS 
+   storeId String
+  store Store @relation("StoreToProduct",fields: [storeId],references: [id])
+  categoryId String
+  category Category  @relation("CategoryToProduct",fields: [categoryId],references: [id])
+ subcategoryId String?
+  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
+  productSizes ProductSize[]
+  productColors ProductColor[]
+
+  stockQuantity Int
+      @@index([storeId])
+      @@index([categoryId])
+        @@index([subcategoryId])
+
+}
+
 //DAY LA BANG TRUNG GIAN MOI QHE 1-1 COLOR + PRODUCT
 
 model ProductColor{
@@ -163,39 +191,6 @@ model ProductColor{
   @@index([colorId])
 }
 
-model Product {
-  id String @id @default(uuid())
- 
-  name String @unique
-  price Float
-  isFeatured Boolean @default(false)
-  isArchived Boolean @default(false)
-  description String
-  shortDescription String
-  images Image[]
-  createAt DateTime @default(now())
-  updateAt DateTime @updatedAt
-  slug String @unique
-  sku String
-  viewCount Int @default(0)
-  ratingCount Int @default(0)
- 
-  //RELATIONS 
-   storeId String
-  store Store @relation("StoreToProduct",fields: [storeId],references: [id])
-  categoryId String
-  category Category  @relation("CategoryToProduct",fields: [categoryId],references: [id])
- subcategoryId String?
-  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
-  productSizes ProductSize[]
-  productColors ProductColor[]
-
-  stockQuantity Int
-      @@index([storeId])
-      @@index([categoryId])
-        @@index([subcategoryId])
-
-}
 
 
 

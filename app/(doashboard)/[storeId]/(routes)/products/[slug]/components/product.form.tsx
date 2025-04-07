@@ -6,7 +6,15 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-import { Category as PrismaCategory, Product, Image } from "@prisma/client";
+import {
+  Category as PrismaCategory,
+  Product,
+  Image,
+  ProductSize,
+  ProductColor,
+  Size,
+  Color,
+} from "@prisma/client";
 
 interface Category extends PrismaCategory {
   subcategories?: { id: string; name: string }[];
@@ -57,7 +65,25 @@ const formSchema = z.object({
   stockQuantity: z.coerce.number(),
 
   //IS OPTIONAL
+  sizes: z
+    .array(
+      z.object({
+        sizeId: z.string().min(1), // Add proper validation for id
+        price: z.coerce.number().min(0), // Add price validation
+        stockQuantity: z.coerce.number().min(0), // Add stock quantity validation
+      })
+    )
+    .optional(),
 
+  colors: z
+    .array(
+      z.object({
+        colorId: z.string().min(1),
+        price: z.coerce.number().min(0),
+        stockQuantity: z.coerce.number().min(0),
+      })
+    )
+    .optional(),
   viewCount: z.coerce.number().default(0).optional(),
   ratingCount: z.coerce.number().default(5).optional(),
 
@@ -67,9 +93,17 @@ interface ProductProps {
   initialData:
     | (Product & {
         images: Image[];
+        productSizes: (ProductSize & {
+          size: Size;
+        })[];
+        productColors: (ProductColor & {
+          color: Color;
+        })[];
       })
     | null;
   categories: Category[];
+  sizes: Size[];
+  colors: Color[];
 }
 
 type ProductFormValues = z.infer<typeof formSchema>;
@@ -77,15 +111,15 @@ type ProductFormValues = z.infer<typeof formSchema>;
 export const ProductForm: React.FC<ProductProps> = ({
   initialData,
   categories,
+  sizes,
+  colors,
 }) => {
   const params = useParams();
   const router = useRouter();
-
   const title = initialData ? "Edit Product" : "Create Product";
   const description = initialData ? "Edit a Product" : "Add a new Product";
   const toastMessage = initialData ? "Product Update" : "Product created";
   const action = initialData ? "Save change " : "Create Product";
-
   const [open, setOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -97,8 +131,18 @@ export const ProductForm: React.FC<ProductProps> = ({
           price: parseFloat(String(initialData.price)),
           subCategoryId: initialData.subcategoryId ?? "",
           slugData: initialData.slug,
+          sizes: initialData.productSizes.map((size) => ({
+            ...size,
+            price: size.price ?? 0,
+          })),
+          colors: initialData.productColors.map((color) => ({
+            ...color,
+            price: color.price ?? 0,
+          })),
         }
       : {
+          sizes: [],
+          colors: [],
           name: "",
           categoryId: "",
           price: 0,
@@ -153,7 +197,6 @@ export const ProductForm: React.FC<ProductProps> = ({
       router.refresh();
       router.push(`/${params.storeId}/products/`);
       toast.success(toastMessage);
-
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_err) {
       toast.error("Something when wrong !!");
@@ -198,7 +241,8 @@ export const ProductForm: React.FC<ProductProps> = ({
             disabled={loading}
             onClick={async () => {
               setOpen(true);
-            }}>
+            }}
+          >
             <Trash className="w-4 h-4 "></Trash>
           </Button>
         )}
@@ -230,9 +274,8 @@ export const ProductForm: React.FC<ProductProps> = ({
                           ),
                         ])
                       }
-                      value={field.value.map(
-                        (image) => image.url
-                      )}></ImageUpload>
+                      value={field.value.map((image) => image.url)}
+                    ></ImageUpload>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -248,7 +291,8 @@ export const ProductForm: React.FC<ProductProps> = ({
                     <Input
                       disabled={loading}
                       {...field}
-                      placeholder="Product Label  "></Input>
+                      placeholder="Product Label  "
+                    ></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -265,7 +309,8 @@ export const ProductForm: React.FC<ProductProps> = ({
                       pattern="\S*"
                       disabled={loading}
                       {...field}
-                      placeholder="Slug "></Input>
+                      placeholder="Slug "
+                    ></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -280,7 +325,8 @@ export const ProductForm: React.FC<ProductProps> = ({
                     <Textarea
                       disabled={loading}
                       {...field}
-                      placeholder="Description "></Textarea>
+                      placeholder="Description "
+                    ></Textarea>
                   </FormControl>
                 </FormItem>
               )}
@@ -295,7 +341,8 @@ export const ProductForm: React.FC<ProductProps> = ({
                     <Input
                       disabled={loading}
                       {...field}
-                      placeholder="Short Description  "></Input>
+                      placeholder="Short Description  "
+                    ></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -311,7 +358,8 @@ export const ProductForm: React.FC<ProductProps> = ({
                       type="number"
                       disabled={loading}
                       {...field}
-                      placeholder="Stock label  "></Input>
+                      placeholder="Stock label  "
+                    ></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -327,12 +375,114 @@ export const ProductForm: React.FC<ProductProps> = ({
                       type="number"
                       disabled={loading}
                       {...field}
-                      placeholder="Price label  "></Input>
+                      placeholder="Price label  "
+                    ></Input>
                   </FormControl>
                 </FormItem>
               )}
             />
-
+            {/* NẾU CÓ COLOR THÌ CHO CHỌN  */}
+            {colors.length > 0 && (
+              <FormField
+                control={form.control}
+                name="colors"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Màu sắc</FormLabel>
+                    <FormDescription>
+                      Chọn các màu sắc có sẵn cho sản phẩm.
+                    </FormDescription>
+                    <div className="flex flex-col space-y-2">
+                      {colors.map((color) => (
+                        <FormItem
+                          key={color.id}
+                          className="flex flex-row items-start space-x-3 space-y-0"
+                        >
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value?.some(
+                                (item) => item.colorId === color.id
+                              )}
+                              onCheckedChange={(checked) => {
+                                const isChecked = checked === true;
+                                if (isChecked) {
+                                  field.onChange([
+                                    ...(field.value || []),
+                                    color.id,
+                                  ]);
+                                } else {
+                                  field.onChange(
+                                    (field.value || []).filter(
+                                      (val) => val.colorId !== color.id
+                                    )
+                                  );
+                                }
+                              }}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel className="text-sm font-normal">
+                              {color.name}
+                            </FormLabel>
+                          </div>
+                        </FormItem>
+                      ))}
+                    </div>
+                  </FormItem>
+                )}
+              />
+            )}
+            {/* NẾU CÓ SIZE THÌ CHO CHỌN */}
+            {sizes.length > 0 && (
+              <FormField
+                control={form.control}
+                name="sizes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sizes</FormLabel>
+                    <FormDescription>
+                      Chọn các kích thước có sẵn cho sản phẩm.
+                    </FormDescription>
+                    <div className="flex flex-col space-y-2">
+                      {sizes.map((size) => (
+                        <FormItem
+                          key={size.id}
+                          className="flex flex-row items-start space-x-3 space-y-0"
+                        >
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value?.some(
+                                (item) => item.sizeId === size.id
+                              )}
+                              onCheckedChange={(checked) => {
+                                const isChecked = checked === true;
+                                if (isChecked) {
+                                  field.onChange([
+                                    ...(field.value || []),
+                                    size.id,
+                                  ]);
+                                } else {
+                                  field.onChange(
+                                    (field.value || []).filter(
+                                      (val) => val.sizeId !== size.id
+                                    )
+                                  );
+                                }
+                              }}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel className="text-sm font-normal">
+                              {size.name}
+                            </FormLabel>
+                          </div>
+                        </FormItem>
+                      ))}
+                    </div>
+                  </FormItem>
+                )}
+              />
+            )}
             <FormField
               control={form.control}
               name="sku"
@@ -343,7 +493,8 @@ export const ProductForm: React.FC<ProductProps> = ({
                     <Input
                       disabled={loading}
                       {...field}
-                      placeholder="SKU  "></Input>
+                      placeholder="SKU  "
+                    ></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -358,7 +509,8 @@ export const ProductForm: React.FC<ProductProps> = ({
                     disabled={loading}
                     onValueChange={field.onChange}
                     value={field.value}
-                    defaultValue={field.value}>
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue
@@ -379,7 +531,6 @@ export const ProductForm: React.FC<ProductProps> = ({
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="subCategoryId"
@@ -394,7 +545,8 @@ export const ProductForm: React.FC<ProductProps> = ({
                     } // Disable nếu không có subcategories
                     onValueChange={field.onChange}
                     value={field.value}
-                    defaultValue={field.value}>
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue
@@ -415,7 +567,6 @@ export const ProductForm: React.FC<ProductProps> = ({
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="isFeatured"
@@ -424,7 +575,8 @@ export const ProductForm: React.FC<ProductProps> = ({
                   <FormControl>
                     <Checkbox
                       onCheckedChange={field.onChange}
-                      checked={field.value}></Checkbox>
+                      checked={field.value}
+                    ></Checkbox>
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel>Featured</FormLabel>
@@ -443,7 +595,8 @@ export const ProductForm: React.FC<ProductProps> = ({
                   <FormControl>
                     <Checkbox
                       onCheckedChange={field.onChange}
-                      checked={field.value}></Checkbox>
+                      checked={field.value}
+                    ></Checkbox>
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel>IsArchieved</FormLabel>
@@ -459,7 +612,8 @@ export const ProductForm: React.FC<ProductProps> = ({
           <Button
             disabled={loading}
             className="ml-auto mt-4 cursor-pointer"
-            type="submit">
+            type="submit"
+          >
             {action}
           </Button>
         </form>
