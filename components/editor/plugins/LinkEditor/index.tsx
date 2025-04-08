@@ -47,7 +47,7 @@ const LinkEditor = () => {
   const updateLink = () => {
     editor.dispatchCommand(TOGGLE_LINK_COMMAND, {
       url: linkUrl,
-
+      target: "_blank",
     });
     setIsEditing(false);
   };

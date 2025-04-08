@@ -42,6 +42,7 @@ import { getSelectedNode } from "@/utils/getSelectedNode";
 import { sanitizeUrl } from "@/utils/url";
 import { INSERT_INLINE_IMAGE_COMMAND } from "./InlineImagePlugin";
 import LinkInputDialog from "@/components/modals/link-input-modal";
+import ImagePickerDialog from "@/components/modals/image-picker";
 
 const ToolbarPlugins = () => {
   const [editor] = useLexicalComposerContext();
@@ -54,7 +55,7 @@ const ToolbarPlugins = () => {
   const [isLink, setIsLink] = useState<boolean>(false);
   const [isOpenLinkDialog, setOpenLinkDialog] = useState(false);
 
-  const [isImageInlineOpen, setImageInlineOpen] = useState(false);
+  const [isImageDialogOpen, setImageDialogOpen] = useState(false);
 
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
 
@@ -226,7 +227,7 @@ const ToolbarPlugins = () => {
           variant="outline"
           size="sm"
           onClick={() => {
-            editor.dispatchCommand(INSERT_INLINE_IMAGE_COMMAND, undefined);
+            setImageDialogOpen(true);
           }}>
           📷 Insert Image
         </Button>
@@ -248,6 +249,17 @@ const ToolbarPlugins = () => {
             editor.dispatchCommand(TOGGLE_LINK_COMMAND, {
               url: sanitizeUrl(url),
               target: "_blank",
+            });
+          }}
+        />
+
+        <ImagePickerDialog
+          open={isImageDialogOpen}
+          onClose={() => setImageDialogOpen(false)}
+          onInsert={(url, position) => {
+            editor.dispatchCommand(INSERT_INLINE_IMAGE_COMMAND, {
+              url,
+              position,
             });
           }}
         />

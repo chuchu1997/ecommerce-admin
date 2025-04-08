@@ -2,25 +2,25 @@ import {
   DecoratorNode,
   LexicalEditor,
   SerializedLexicalNode,
-  Spread,
 } from "lexical";
 import * as React from "react";
 
-type SerializedInlineImageNode = Spread<
-  {
-    src: string;
-    alt: string;
-    width?: number;
-    height?: number;
-  },
-  SerializedLexicalNode
->;
+export type SerializedInlineImageNode = {
+  url: string;
+  altText: string;
+  width: number;
+  height: number;
+  position: "left" | "right" | "full";
+  type: string;
+  version: 1;
+} & SerializedLexicalNode;
 
 export class InlineImageNode extends DecoratorNode<React.JSX.Element> {
-  __src: string;
-  __alt: string;
-  __width?: number;
-  __height?: number;
+  __url: string;
+  __altText: string;
+  __width: number;
+  __height: number;
+  __position: "left" | "right" | "full";
 
   static getType(): string {
     return "inline-image";
@@ -28,46 +28,56 @@ export class InlineImageNode extends DecoratorNode<React.JSX.Element> {
 
   static clone(node: InlineImageNode): InlineImageNode {
     return new InlineImageNode(
-      node.__src,
-      node.__alt,
+      node.__url,
+      node.__altText,
       node.__width,
       node.__height,
+      node.__position,
       node.__key
     );
   }
 
   constructor(
-    src: string,
-    alt: string,
-    width?: number,
-    height?: number,
+    url: string,
+    altText: string,
+    width: number,
+    height: number,
+    position: "left" | "right" | "full",
     key?: string
   ) {
     super(key);
-    this.__src = src;
-    this.__alt = alt;
+    this.__url = url;
+    this.__altText = altText;
     this.__width = width;
     this.__height = height;
+    this.__position = position;
   }
 
   createDOM(): HTMLElement {
-    return document.createElement("span");
+    const span = document.createElement("span");
+    return span;
   }
 
-  updateDOM(): false {
+  updateDOM(): boolean {
     return false;
   }
 
   decorate(): React.JSX.Element {
     return (
       <img
-        src={this.__src}
-        alt={this.__alt}
+        src={this.__url}
+        alt={this.__altText}
         width={this.__width}
         height={this.__height}
         style={{
-          display: "inline-block",
-          verticalAlign: "middle",
+          float:
+            this.__position === "left"
+              ? "left"
+              : this.__position === "right"
+              ? "right"
+              : "none",
+          display: "block",
+          margin: "8px 0",
           maxWidth: "100%",
         }}
       />
@@ -75,35 +85,29 @@ export class InlineImageNode extends DecoratorNode<React.JSX.Element> {
   }
 
   static importJSON(serializedNode: SerializedInlineImageNode): InlineImageNode {
-    const { src, alt, width, height } = serializedNode;
-    return new InlineImageNode(src, alt, width, height);
+    const { url, altText, width, height, position } = serializedNode;
+    return new InlineImageNode(url, altText, width, height, position);
   }
 
   exportJSON(): SerializedInlineImageNode {
     return {
       type: "inline-image",
       version: 1,
-      src: this.__src,
-      alt: this.__alt,
+      url: this.__url,
+      altText: this.__altText,
       width: this.__width,
       height: this.__height,
+      position: this.__position,
     };
-  }
-
-  isInline(): boolean {
-    return true;
   }
 }
 
 export function $createInlineImageNode(
-  src: string,
-  alt: string,
-  width?: number,
-  height?: number
+  url: string,
+  altText: string,
+  width: number,
+  height: number,
+  position: "left" | "right" | "full"
 ): InlineImageNode {
-  return new InlineImageNode(src, alt, width, height);
-}
-
-export function $isInlineImageNode(node: unknown): node is InlineImageNode {
-  return node instanceof InlineImageNode;
+  return new InlineImageNode(url, altText, width, height, position);
 }
