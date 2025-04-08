@@ -119,6 +119,7 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
         loading={loading}
         onConfirm={async () => {
           await onDelete();
+          setOpen(false);
         }}
       />
       <div className="flex items-center justify-between my-4">
@@ -131,8 +132,7 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
             disabled={loading}
             onClick={async () => {
               setOpen(true);
-            }}
-          >
+            }}>
             <Trash className="w-4 h-4 "></Trash>
           </Button>
         )}
@@ -153,8 +153,7 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
                     disabled={loading}
                     onChange={(url) => field.onChange(url)}
                     onRemove={() => field.onChange("")}
-                    value={field.value ? [field.value] : []}
-                  ></ImageUpload>
+                    value={field.value ? [field.value] : []}></ImageUpload>
                 </FormControl>
               </FormItem>
             )}
@@ -170,8 +169,7 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
                     <Input
                       disabled={loading}
                       {...field}
-                      placeholder="Tên hình   "
-                    ></Input>
+                      placeholder="Tên hình   "></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -185,8 +183,7 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
                   <FormControl>
                     <Checkbox
                       onCheckedChange={field.onChange}
-                      checked={field.value}
-                    ></Checkbox>
+                      checked={field.value}></Checkbox>
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel>Được hiển thị ở Banner ? </FormLabel>

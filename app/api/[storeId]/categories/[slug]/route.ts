@@ -20,8 +20,18 @@ export async function GET(
       },
       include: {
         billboard: true,
-        products: true,
-        services: true,
+        products: {
+          include: {
+            images: true,
+            category: true,
+            subcategory: true,
+          },
+        },
+        services: {
+          include: {
+            images: true,
+          },
+        },
         subcategories: {
           include: {
             billboard: true,

@@ -175,8 +175,8 @@ export const ServiceForm: React.FC<ServicesProps> = ({
             disabled={loading}
             onClick={async () => {
               setOpen(true);
-            }}
-          >
+              setOpen(false);
+            }}>
             <Trash className="w-4 h-4 "></Trash>
           </Button>
         )}
@@ -208,8 +208,9 @@ export const ServiceForm: React.FC<ServicesProps> = ({
                           ),
                         ])
                       }
-                      value={field.value.map((image) => image.url)}
-                    ></ImageUpload>
+                      value={field.value.map(
+                        (image) => image.url
+                      )}></ImageUpload>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -225,8 +226,7 @@ export const ServiceForm: React.FC<ServicesProps> = ({
                     <Input
                       disabled={loading}
                       {...field}
-                      placeholder="Tên dịch vụ  "
-                    ></Input>
+                      placeholder="Tên dịch vụ  "></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -243,8 +243,7 @@ export const ServiceForm: React.FC<ServicesProps> = ({
                       pattern="\S*"
                       disabled={loading}
                       {...field}
-                      placeholder="Slug "
-                    ></Input>
+                      placeholder="Slug "></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -259,8 +258,7 @@ export const ServiceForm: React.FC<ServicesProps> = ({
                     <Textarea
                       disabled={loading}
                       {...field}
-                      placeholder="Mô tả"
-                    ></Textarea>
+                      placeholder="Mô tả"></Textarea>
                   </FormControl>
                 </FormItem>
               )}
@@ -277,8 +275,7 @@ export const ServiceForm: React.FC<ServicesProps> = ({
                       type="number"
                       disabled={loading}
                       {...field}
-                      placeholder="Lưu ý (Nếu dịch vụ có giá cụ thể thì nhập , không thì để trống !!!!)  "
-                    ></Input>
+                      placeholder="Lưu ý (Nếu dịch vụ có giá cụ thể thì nhập , không thì để trống !!!!)  "></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -295,8 +292,7 @@ export const ServiceForm: React.FC<ServicesProps> = ({
                   disabled={loading}
                   onValueChange={field.onChange}
                   value={field.value}
-                  defaultValue={field.value}
-                >
+                  defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue
@@ -332,8 +328,7 @@ export const ServiceForm: React.FC<ServicesProps> = ({
                   } // Disable nếu không có subcategories
                   onValueChange={field.onChange}
                   value={field.value}
-                  defaultValue={field.value}
-                >
+                  defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue
@@ -358,8 +353,7 @@ export const ServiceForm: React.FC<ServicesProps> = ({
           <Button
             disabled={loading}
             className="ml-auto mt-4 cursor-pointer"
-            type="submit"
-          >
+            type="submit">
             {action}
           </Button>
         </form>

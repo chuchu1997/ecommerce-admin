@@ -229,6 +229,7 @@ export const ProductForm: React.FC<ProductProps> = ({
         loading={loading}
         onConfirm={async () => {
           await onDelete();
+          setOpen(false);
         }}
       />
       <div className="flex items-center justify-between my-4">
@@ -241,8 +242,7 @@ export const ProductForm: React.FC<ProductProps> = ({
             disabled={loading}
             onClick={async () => {
               setOpen(true);
-            }}
-          >
+            }}>
             <Trash className="w-4 h-4 "></Trash>
           </Button>
         )}
@@ -274,8 +274,9 @@ export const ProductForm: React.FC<ProductProps> = ({
                           ),
                         ])
                       }
-                      value={field.value.map((image) => image.url)}
-                    ></ImageUpload>
+                      value={field.value.map(
+                        (image) => image.url
+                      )}></ImageUpload>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -291,8 +292,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                     <Input
                       disabled={loading}
                       {...field}
-                      placeholder="Product Label  "
-                    ></Input>
+                      placeholder="Product Label  "></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -309,8 +309,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                       pattern="\S*"
                       disabled={loading}
                       {...field}
-                      placeholder="Slug "
-                    ></Input>
+                      placeholder="Slug "></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -325,8 +324,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                     <Textarea
                       disabled={loading}
                       {...field}
-                      placeholder="Description "
-                    ></Textarea>
+                      placeholder="Description "></Textarea>
                   </FormControl>
                 </FormItem>
               )}
@@ -341,8 +339,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                     <Input
                       disabled={loading}
                       {...field}
-                      placeholder="Short Description  "
-                    ></Input>
+                      placeholder="Short Description  "></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -358,8 +355,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                       type="number"
                       disabled={loading}
                       {...field}
-                      placeholder="Stock label  "
-                    ></Input>
+                      placeholder="Stock label  "></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -375,8 +371,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                       type="number"
                       disabled={loading}
                       {...field}
-                      placeholder="Price label  "
-                    ></Input>
+                      placeholder="Price label  "></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -396,8 +391,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                       {colors.map((color) => (
                         <FormItem
                           key={color.id}
-                          className="flex flex-row items-start space-x-3 space-y-0"
-                        >
+                          className="flex flex-row items-start space-x-3 space-y-0">
                           <FormControl>
                             <Checkbox
                               checked={field.value?.some(
@@ -447,8 +441,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                       {sizes.map((size) => (
                         <FormItem
                           key={size.id}
-                          className="flex flex-row items-start space-x-3 space-y-0"
-                        >
+                          className="flex flex-row items-start space-x-3 space-y-0">
                           <FormControl>
                             <Checkbox
                               checked={field.value?.some(
@@ -493,8 +486,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                     <Input
                       disabled={loading}
                       {...field}
-                      placeholder="SKU  "
-                    ></Input>
+                      placeholder="SKU  "></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -509,8 +501,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                     disabled={loading}
                     onValueChange={field.onChange}
                     value={field.value}
-                    defaultValue={field.value}
-                  >
+                    defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue
@@ -545,8 +536,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                     } // Disable nếu không có subcategories
                     onValueChange={field.onChange}
                     value={field.value}
-                    defaultValue={field.value}
-                  >
+                    defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue
@@ -575,8 +565,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                   <FormControl>
                     <Checkbox
                       onCheckedChange={field.onChange}
-                      checked={field.value}
-                    ></Checkbox>
+                      checked={field.value}></Checkbox>
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel>Featured</FormLabel>
@@ -595,8 +584,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                   <FormControl>
                     <Checkbox
                       onCheckedChange={field.onChange}
-                      checked={field.value}
-                    ></Checkbox>
+                      checked={field.value}></Checkbox>
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel>IsArchieved</FormLabel>
@@ -612,8 +600,7 @@ export const ProductForm: React.FC<ProductProps> = ({
           <Button
             disabled={loading}
             className="ml-auto mt-4 cursor-pointer"
-            type="submit"
-          >
+            type="submit">
             {action}
           </Button>
         </form>

@@ -132,6 +132,7 @@ export const CategoryForm: React.FC<CategoryProps> = ({
         loading={loading}
         onConfirm={async () => {
           await onDelete();
+          setOpen(false);
         }}
       />
       <div className="flex items-center justify-between my-4">

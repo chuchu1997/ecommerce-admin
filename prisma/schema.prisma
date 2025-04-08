@@ -48,6 +48,28 @@ model Store {
 
 
 
+model Service {
+  id String @id @default(uuid())
+  name String
+  description String
+  price Float?
+  slug String @unique
+  isActive Boolean @default(true)
+  createAt DateTime @default(now())
+  images Image[]
+  updateAt DateTime @updatedAt
+  storeId String
+  categoryId String
+  category Category  @relation("CategoryToProduct",fields: [categoryId],references: [id])
+  subcategoryId String?
+  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
+
+  store Store @relation("StoreToService",fields: [storeId],references: [id])
+  @@index([storeId])
+  @@index([categoryId])
+  @@index([subcategoryId])
+}
+
 
 model Category{
 
@@ -160,7 +182,7 @@ model Product {
   store Store @relation("StoreToProduct",fields: [storeId],references: [id])
   categoryId String
   category Category  @relation("CategoryToProduct",fields: [categoryId],references: [id])
- subcategoryId String?
+   subcategoryId String?
   subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
   productSizes ProductSize[]
   productColors ProductColor[]
@@ -193,29 +215,6 @@ model ProductColor{
 
 
 
-
-model Service {
-  id String @id @default(uuid())
-  name String
-  description String
-  price Float?
-  slug String @unique
-  isActive Boolean @default(true)
-  createAt DateTime @default(now())
-  images Image[]
-  imageId   String?  @unique  // Bảo đảm một Service chỉ có một Image
-  updateAt DateTime @updatedAt
-  storeId String
-  categoryId String
-  category Category  @relation("CategoryToProduct",fields: [categoryId],references: [id])
-  subcategoryId String?
-  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
-
-  store Store @relation("StoreToService",fields: [storeId],references: [id])
-  @@index([storeId])
-  @@index([categoryId])
-  @@index([subcategoryId])
-}
 
 
 

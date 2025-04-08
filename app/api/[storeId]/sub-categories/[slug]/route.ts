@@ -23,6 +23,8 @@ export async function GET(
         products: {
           include: {
             images: true,
+            category: true,
+            subcategory: true,
           },
         },
         category: true,
@@ -105,9 +107,7 @@ export async function DELETE(
 ) {
   try {
     const user = await getCurrentUser();
-
-    const { storeId, slug } = await params;
-
+    let { storeId, slug } = await params;
     if (!user) {
       return new NextResponse("Unauthenticaed", { status: 401 });
     }

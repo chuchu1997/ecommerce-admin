@@ -99,7 +99,6 @@ export const CategoryForm: React.FC<CategoryProps> = ({
   const onDelete = async () => {
     try {
       setLoading(true);
-
       await axios.delete(`/api/${params.storeId}/categories/${params.slug}`);
       router.refresh();
       toast.success("Xóa Category thành công !!");
@@ -121,6 +120,7 @@ export const CategoryForm: React.FC<CategoryProps> = ({
         loading={loading}
         onConfirm={async () => {
           await onDelete();
+          setOpen(false);
         }}
       />
       <div className="flex items-center justify-between my-4">

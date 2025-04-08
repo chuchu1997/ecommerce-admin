@@ -22,16 +22,13 @@ export async function GET(
     if (!storeId) {
       return new NextResponse("Store Id is required ", { status: 400 });
     }
-
     const products = await prismadb.product.findMany({
       where: {
         storeId: storeId,
         categoryId,
         isFeatured: isFeatured ? true : undefined,
         isArchived: false,
-        subcategory: {
-          id: subCategoryId,
-        },
+        subcategoryId: subCategoryId ?? undefined,
       },
       include: {
         images: true,

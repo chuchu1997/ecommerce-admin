@@ -7,6 +7,7 @@ body,
   height: 100%;
 }
 
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -64,7 +65,9 @@ body,
 }
 
 @layer base {
+ 
   :root {
+    
     overflow-x: hidden;
     --font-roboto: "Roboto", sans-serif;
     --radius: 0.625rem;

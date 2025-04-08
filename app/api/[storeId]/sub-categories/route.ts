@@ -23,6 +23,7 @@ export async function GET(
       include: {
         category: true,
         billboard: true,
+        products: true,
       },
     });
 

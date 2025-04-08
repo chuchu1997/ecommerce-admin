@@ -1,8 +1,16 @@
+/** @format */
+
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Toggle } from "@/components/ui/toggle";
-import { BoldIcon, ItalicIcon, UnderlineIcon, Loader2Icon } from "lucide-react";
+import {
+  BoldIcon,
+  ItalicIcon,
+  UnderlineIcon,
+  Loader2Icon,
+  LinkIcon,
+} from "lucide-react";
 import {
   $getSelection,
   $isRangeSelection,
@@ -14,8 +22,10 @@ import {
   CAN_UNDO_COMMAND,
   UNDO_COMMAND,
   REDO_COMMAND,
+  RangeSelection,
 } from "lexical";
 import { $isHeadingNode } from "@lexical/rich-text";
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 
 import { $isListNode, ListNode } from "@lexical/list";
 
@@ -28,6 +38,10 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import BlockTypeDropdown from "./components/block-type-dropdown";
 import { blockTypeToBlockName } from "./components/block-types";
+import { getSelectedNode } from "@/utils/getSelectedNode";
+import { sanitizeUrl } from "@/utils/url";
+import { INSERT_INLINE_IMAGE_COMMAND } from "./InlineImagePlugin";
+import LinkInputDialog from "@/components/modals/link-input-modal";
 
 const ToolbarPlugins = () => {
   const [editor] = useLexicalComposerContext();
@@ -37,32 +51,38 @@ const ToolbarPlugins = () => {
 
   const [canUndo, setCanUndo] = useState<boolean>(false);
   const [canRedo, setCanRedo] = useState<boolean>(false);
+  const [isLink, setIsLink] = useState<boolean>(false);
+  const [isOpenLinkDialog, setOpenLinkDialog] = useState(false);
+
+  const [isImageInlineOpen, setImageInlineOpen] = useState(false);
+
+  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
+
   const [blockType, setBlockType] =
     useState<keyof typeof blockTypeToBlockName>("paragraph");
 
   const $updateToolbar = useCallback(() => {
     const selection = $getSelection();
+
     if ($isRangeSelection(selection)) {
       setIsBold(selection.hasFormat("bold"));
       setIsItalic(selection.hasFormat("italic"));
       setIsUnderline(selection.hasFormat("underline"));
 
       const anchorNode = selection.anchor.getNode();
-
       let element =
         anchorNode.getKey() === "root"
           ? anchorNode
           : $findMatchingParent(anchorNode, (e) => {
               const parent = e.getParent();
               return parent !== null && $isRootOrShadowRoot(parent);
-            });
+            }) ?? anchorNode.getTopLevelElementOrThrow();
 
-      if (element === null) {
-        element = anchorNode.getTopLevelElementOrThrow();
-      }
+      const node = getSelectedNode(selection);
+      const parent = node.getParent();
+      setIsLink($isLinkNode(parent) || $isLinkNode(node));
 
       const elementDOM = editor.getElementByKey(element.getKey());
-
       if (elementDOM !== null) {
         if ($isListNode(element)) {
           const parentList = $getNearestNodeOfType<ListNode>(
@@ -73,15 +93,25 @@ const ToolbarPlugins = () => {
             ? parentList.getListType()
             : element.getListType();
           setBlockType(type);
+        } else if ($isHeadingNode(element)) {
+          const tag = element.getTag(); // h1, h2, ...
+          setBlockType(tag as keyof typeof blockTypeToBlockName);
         } else {
-          const type = $isHeadingNode(element)
-            ? element.getTag()
-            : element.getType();
+          const type = element.getType(); // paragraph, quote
           if (type in blockTypeToBlockName) {
             setBlockType(type as keyof typeof blockTypeToBlockName);
+          } else {
+            setBlockType("paragraph");
           }
         }
       }
+    } else {
+      // When no selection, reset state
+      setIsBold(false);
+      setIsItalic(false);
+      setIsUnderline(false);
+      setIsLink(false);
+      setBlockType("paragraph");
     }
   }, [editor]);
 
@@ -123,6 +153,7 @@ const ToolbarPlugins = () => {
       )
     );
   }, [editor]);
+
   return (
     <div className="w-full p-1 border-b z-10">
       <div className="flex space-x-2 justify-center">
@@ -130,8 +161,7 @@ const ToolbarPlugins = () => {
           className="h-8 px-2"
           variant={"ghost"}
           disabled={!canUndo}
-          onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)}
-        >
+          onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)}>
           {/* reload flip to left */}
           <Loader2Icon className="transform -scale-x-100" />
         </Button>
@@ -140,8 +170,7 @@ const ToolbarPlugins = () => {
           className="h-8 px-2"
           variant={"ghost"}
           disabled={!canRedo}
-          onClick={() => editor.dispatchCommand(REDO_COMMAND, undefined)}
-        >
+          onClick={() => editor.dispatchCommand(REDO_COMMAND, undefined)}>
           <Loader2Icon />
         </Button>
         <Separator orientation="vertical" className="h-auto my-1" />
@@ -153,8 +182,7 @@ const ToolbarPlugins = () => {
           onPressedChange={(pressed) => {
             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
             setIsBold(pressed);
-          }}
-        >
+          }}>
           <BoldIcon />
         </Toggle>
 
@@ -165,8 +193,7 @@ const ToolbarPlugins = () => {
           onPressedChange={(pressed) => {
             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
             setIsItalic(pressed);
-          }}
-        >
+          }}>
           <ItalicIcon />
         </Toggle>
 
@@ -177,12 +204,53 @@ const ToolbarPlugins = () => {
           onPressedChange={(pressed) => {
             editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
             setIsUnderline(pressed);
-          }}
-        >
+          }}>
           <UnderlineIcon />
         </Toggle>
 
-        <BlockTypeDropdown blockType={blockType} />
+        <Toggle
+          area-label="Link"
+          size="sm"
+          pressed={isLink}
+          onPressedChange={() => {
+            if (!isLink) {
+              setOpenLinkDialog(true); // mở dialog nhập link
+            } else {
+              editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+            }
+          }}>
+          <LinkIcon />
+        </Toggle>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            editor.dispatchCommand(INSERT_INLINE_IMAGE_COMMAND, undefined);
+          }}>
+          📷 Insert Image
+        </Button>
+
+        <BlockTypeDropdown
+          blockType={blockType}
+          onUpdate={() => {
+            editor.getEditorState().read(() => {
+              console.log("UPDATE CALL !!");
+              $updateToolbar();
+            });
+          }}
+        />
+
+        <LinkInputDialog
+          open={isOpenLinkDialog}
+          onClose={() => setOpenLinkDialog(false)}
+          onConfirm={(url) => {
+            editor.dispatchCommand(TOGGLE_LINK_COMMAND, {
+              url: sanitizeUrl(url),
+              target: "_blank",
+            });
+          }}
+        />
       </div>
     </div>
   );
