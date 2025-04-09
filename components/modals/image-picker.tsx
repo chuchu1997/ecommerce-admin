@@ -17,14 +17,41 @@ export default function ImagePickerDialog({
   const [position, setPosition] = useState<"left" | "right" | "full">("full");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadImageToCloudinary = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "nguyencuong");
+
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
+    return res.json();
+
+
+    
+
+  }
+  const handleFileChange =async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPreviewUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+
+     let data =  await uploadImageToCloudinary(file)
+     if(data){
+      const imageUrl = data.secure_url;
+              setPreviewUrl(imageUrl);
+
+      /////TODO:
+     }
+
+
+      // const reader = new FileReader();
+      // reader.onload = () => {
+      //   setPreviewUrl(reader.result as string);
+      // };
+      // reader.readAsDataURL(file);
     }
   };
 

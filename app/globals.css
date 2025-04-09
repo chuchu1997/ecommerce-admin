@@ -1,12 +1,16 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-html,
+/* html,
 body,
 :root {
   height: 100%;
 }
+ */
 
+ html {
+  scroll-behavior: auto !important;
+}
 
 @theme inline {
   --color-background: var(--background);
@@ -67,8 +71,8 @@ body,
 @layer base {
  
   :root {
-    
-    overflow-x: hidden;
+
+     overflow-x: hidden;
     --font-roboto: "Roboto", sans-serif;
     --radius: 0.625rem;
     --background: oklch(1 0 0);

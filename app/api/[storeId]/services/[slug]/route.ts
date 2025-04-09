@@ -24,7 +24,6 @@ export async function GET(
         subcategory: true,
       },
     });
-    console.log("TIM THAY SERVIUCE", service);
     return NextResponse.json(service, { status: 200 });
   } catch (err) {
     console.log("[SERVICE_GET_ID]", err);

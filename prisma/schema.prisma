@@ -51,7 +51,7 @@ model Store {
 model Service {
   id String @id @default(uuid())
   name String
-  description String
+  description String @db.Text
   price Float?
   slug String @unique
   isActive Boolean @default(true)
@@ -168,7 +168,7 @@ model Product {
   price Float
   isFeatured Boolean @default(false)
   isArchived Boolean @default(false)
-  description String
+  description String @db.Text
   shortDescription String
   images Image[]
   createAt DateTime @default(now())

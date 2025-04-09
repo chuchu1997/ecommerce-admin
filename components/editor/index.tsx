@@ -33,33 +33,31 @@ import { ClickableLinkPlugin } from "@lexical/react/LexicalClickableLinkPlugin";
 import LinkEditor from "./plugins/LinkEditor";
 import { PreventLinkOpenPlugin } from "./plugins/PreventLinkPlugin";
 import LoadEditorStatePlugin from "./plugins/LoadStatePlugin";
+import RichTextWrapper from "./editor-wrapper";
 
 interface EditorInterface {
-  initialEditorState?: string;
-  onSave: (content: string) => void;
+  value?: string; // serialized JSON string
+  onChange?: (content: string) => void;
 }
 
-const EditorComponent: React.FC<EditorInterface> = ({
-  initialEditorState,
-  onSave,
-}) => {
-  const SaveButton = () => {
-    const [editor] = useLexicalComposerContext();
-    const handleClick = useCallback(() => {
-      editor.update(async () => {
-        const editorState = editor.getEditorState();
-        const serialized = editorState.toJSON();
-        const saveJSONString = JSON.stringify(serialized, null, 2);
-        onSave(saveJSONString);
-      });
-    }, [editor]);
+const EditorComponent: React.FC<EditorInterface> = ({ value, onChange }) => {
+  // const SaveButton = () => {
+  //   const [editor] = useLexicalComposerContext();
+  //   const handleClick = useCallback(() => {
+  //     editor.update(async () => {
+  //       const editorState = editor.getEditorState();
+  //       const serialized = editorState.toJSON();
+  //       const saveJSONString = JSON.stringify(serialized, null, 2);
+  //       onSave(saveJSONString);
+  //     });
+  //   }, [editor]);
 
-    return (
-      <div className="px-8 pb-4">
-        <Button onClick={handleClick}>Lưu Nội Dung </Button>
-      </div>
-    );
-  };
+  //   return (
+  //     <div className="px-8 pb-4">
+  //       <Button onClick={handleClick}>Lưu Nội Dung </Button>
+  //     </div>
+  //   );
+  // };
 
   const config: InitialConfigType = {
     namespace: "lexical-editor",
@@ -118,17 +116,10 @@ const EditorComponent: React.FC<EditorInterface> = ({
         {/* Toolbar */}
         <ToolbarPlugins />
         <div className="relative">
-          <RichTextPlugin
-            contentEditable={
-              <ContentEditable className="focus:outline-none w-full px-8 py-4 h-[500px] overflow-auto relative" />
-            }
-            placeholder={
-              <p className="text-muted-foreground absolute top-0 px-8 py-4 w-full pointer-events-none">
-                Enter some text...
-              </p>
-            }
-            ErrorBoundary={LexicalErrorBoundary as any}
-          />
+          {/* THIS IS CUSTOM RICH TEXT */}
+          <RichTextWrapper onChange={onChange} value={value} />
+          {/* THIS IS CUSTOM RICH TEXT */}
+
           <HistoryPlugin />
         </div>
         <InlineImagePlugin />
@@ -138,11 +129,11 @@ const EditorComponent: React.FC<EditorInterface> = ({
         <ClickableLinkPlugin />
         <LinkEditor /> {/* Custom component để chỉnh sửa link */}
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
-        {initialEditorState && (
+        {/* ✅ Save button inside LexicalComposer */}
+        {/* {initialEditorState && (
           <LoadEditorStatePlugin initialEditorState={initialEditorState} />
         )}
-        {/* ✅ Save button inside LexicalComposer */}
-        <SaveButton />
+        <SaveButton /> */}
       </div>
     </LexicalComposer>
   );

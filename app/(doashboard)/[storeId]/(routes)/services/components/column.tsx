@@ -26,11 +26,7 @@ export const columns: ColumnDef<ServiceColumn>[] = [
     header: "Tên dịch vụ",
     cell: ({ row }) => row.original.name,
   },
-  {
-    accessorKey: "description",
-    header: "Mô tả",
-    cell: ({ row }) => row.original.description,
-  },
+
   {
     accessorKey: "image",
     header: "Hình ảnh ",
@@ -41,8 +37,7 @@ export const columns: ColumnDef<ServiceColumn>[] = [
           fill
           className="object-cover rounded-xl"
           loading="eager" // ✅ Ensures images load immediately
-          alt="image-product"
-        ></Image>
+          alt="image-product"></Image>
       </div>
     ),
   },

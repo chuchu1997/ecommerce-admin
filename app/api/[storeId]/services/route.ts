@@ -14,15 +14,24 @@ export async function GET(
     const { searchParams } = new URL(req.url);
     const limit = parseInt(searchParams.get("limit") || "4"); // Mặc định 4 sản phẩm mỗi lần
     const currentPage = parseInt(searchParams.get("currentPage") || "1"); // Trang mặc định là 1
+
+    const categoryId = searchParams.get("categoryId") || undefined;
+
+    const subCategoryId = searchParams.get("subCategoryId") || undefined;
+
     if (!storeId) {
       return new NextResponse("Store Id is required ", { status: 400 });
     }
     const services = await prismadb.service.findMany({
       where: {
         storeId: storeId,
+        categoryId,
+        subcategoryId: subCategoryId ?? undefined,
       },
       include: {
         images: true,
+        category: true,
+        subcategory: true,
       },
       orderBy: {
         createAt: "desc",

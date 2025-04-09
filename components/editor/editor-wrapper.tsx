@@ -1,6 +1,6 @@
 
 
-import { useEffect } from "react";
+import { startTransition, useEffect, useRef } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -16,22 +16,43 @@ const RichTextWrapper = ({
     value?: string;
   }) => {
     const [editor] = useLexicalComposerContext();
-  
+    const initialized = useRef(false);
+
     useEffect(() => {
-      if (value) {
-        const parsed = JSON.parse(value);
-        const newEditorState = editor.parseEditorState(parsed);
-        editor.setEditorState(newEditorState);
+      if (value && !initialized.current) {
+        if (value && !initialized.current) {
+          try {
+            const parsed = JSON.parse(value);
+            const newState = editor.parseEditorState(parsed);
+      
+            // Dùng React startTransition để tránh lỗi flushSync
+            if (value && !initialized.current) {
+              const parsed = JSON.parse(value);
+              const newState = editor.parseEditorState(parsed);
+              editor.update(() => {
+                editor.setEditorState(newState);
+                initialized.current = true;
+              });
+              // Dùng animation frame để đảm bảo editor đã render xong
+           
+            }
+          } catch (err) {
+            console.error("Failed to load editor state", err);
+          }
+        }
       }
-    }, [value, editor]);
+      }, [value, editor]);
+
+      useEffect(() => {
+        return editor.registerUpdateListener(({ editorState }) => {
+          const json = JSON.stringify(editorState.toJSON());
+          onChange?.(json);
+        });
+              /// BẤT KỲ GIÁ TRỊ NÀO THAY ĐỔI CONVERT JSON TO STRING VÀ LƯU
+
+      }, [editor, onChange]);
   
-    useEffect(() => {
-      return editor.registerUpdateListener(({ editorState }) => {
-        const json = JSON.stringify(editorState.toJSON());
-        onChange?.(json);
-      });
-    }, [editor, onChange]);
-  
+ 
     return (
       <RichTextPlugin
         contentEditable={
@@ -42,3 +63,6 @@ const RichTextWrapper = ({
       />
     );
   };
+
+
+  export default RichTextWrapper;

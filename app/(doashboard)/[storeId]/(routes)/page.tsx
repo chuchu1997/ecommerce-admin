@@ -18,6 +18,8 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
 
   return (
     <div>
+
+
       {/* <EditorComponent onSave={(newContent)=>{
         console.log("NEW CONTENT",newContent);
       }}/> */}

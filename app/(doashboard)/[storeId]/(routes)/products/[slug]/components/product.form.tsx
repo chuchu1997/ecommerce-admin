@@ -47,6 +47,7 @@ import { useEffect, useState } from "react";
 import ImageUpload from "@/components/ui/image-upload";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import EditorComponent from "@/components/editor";
 
 const formSchema = z.object({
   name: z.string().min(1),
@@ -116,13 +117,16 @@ export const ProductForm: React.FC<ProductProps> = ({
 }) => {
   const params = useParams();
   const router = useRouter();
-  const title = initialData ? "Edit Product" : "Create Product";
-  const description = initialData ? "Edit a Product" : "Add a new Product";
-  const toastMessage = initialData ? "Product Update" : "Product created";
-  const action = initialData ? "Save change " : "Create Product";
+  const title = initialData ? "Chỉnh sửa sản phẩm" : "Tạo sản phẩm ";
+  const description = initialData ? "Chỉnh sửa sản phẩm" : "Tạo sản phẩm mới ";
+  const toastMessage = initialData ? "Đã chỉnh sửa " : "Đã tạo sản phẩm ";
+  const action = initialData ? "Lưu thay đổi " : "Tạo sản phẩm";
   const [open, setOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
+
+  const [showEditor, setShowEditor] = useState(false);
+
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData
@@ -251,14 +255,82 @@ export const ProductForm: React.FC<ProductProps> = ({
       <Separator />
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className=" w-full">
-          <div className="grid grid-cols-2 gap-8 mt-[15px]">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-full md:w-1/2 mx-auto">
+          <div className="grid grid-cols-1 gap-8 mt-[15px]">
+            <FormField
+              control={form.control}
+              name="categoryId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Danh mục </FormLabel>
+                  <Select
+                    disabled={loading}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a main category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent position="popper">
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="subCategoryId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Danh mục con</FormLabel>
+                  <div className="relative ">
+                    <Select
+                      disabled={
+                        categories.find(
+                          (category) => category.id === form.watch("categoryId")
+                        )?.subcategories?.length === 0
+                      } // Disable nếu không có subcategories
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            defaultValue={field.value}
+                            placeholder="Select a sub category"
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+
+                      <SelectContent position="popper">
+                        {subcategories.map((subcategory) => (
+                          <SelectItem
+                            key={subcategory.id}
+                            value={subcategory.id}>
+                            {subcategory.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="images"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Images </FormLabel>
+                  <FormLabel>Hình ảnh sản phẩm </FormLabel>
                   <FormControl>
                     <ImageUpload
                       disabled={loading}
@@ -287,12 +359,12 @@ export const ProductForm: React.FC<ProductProps> = ({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Product Name </FormLabel>
+                  <FormLabel>Tên sản phẩm </FormLabel>
                   <FormControl>
                     <Input
                       disabled={loading}
                       {...field}
-                      placeholder="Product Label  "></Input>
+                      placeholder="Tên sản phẩm   "></Input>
                   </FormControl>
                 </FormItem>
               )}
@@ -319,13 +391,31 @@ export const ProductForm: React.FC<ProductProps> = ({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      disabled={loading}
-                      {...field}
-                      placeholder="Description "></Textarea>
-                  </FormControl>
+                  <FormLabel>Mô tả sản phẩm </FormLabel>
+                  {!showEditor ? (
+                    <div
+                      className="border p-4 rounded-lg text-gray-500 cursor-pointer hover:bg-gray-100"
+                      onClick={() => setShowEditor(true)}>
+                      ✍️ Click để thêm mô tả
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <FormControl>
+                        <EditorComponent
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+
+                      <div className="text-right">
+                        <Button
+                          type="button"
+                          onClick={() => setShowEditor(false)}>
+                          Ẩn Text Editor
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </FormItem>
               )}
             />
@@ -334,7 +424,7 @@ export const ProductForm: React.FC<ProductProps> = ({
               name="shortDescription"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Short Description </FormLabel>
+                  <FormLabel>Mô tả ngắn </FormLabel>
                   <FormControl>
                     <Input
                       disabled={loading}
@@ -349,7 +439,7 @@ export const ProductForm: React.FC<ProductProps> = ({
               name="stockQuantity"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Stock </FormLabel>
+                  <FormLabel>Số lượng </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -365,7 +455,7 @@ export const ProductForm: React.FC<ProductProps> = ({
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price </FormLabel>
+                  <FormLabel>Giá </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -491,72 +581,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="categoryId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category </FormLabel>
-                  <Select
-                    disabled={loading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a main category"
-                        />
-                      </SelectTrigger>
-                    </FormControl>
 
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="subCategoryId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Sub Category</FormLabel>
-                  <Select
-                    disabled={
-                      categories.find(
-                        (category) => category.id === form.watch("categoryId")
-                      )?.subcategories?.length === 0
-                    } // Disable nếu không có subcategories
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a sub category"
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-
-                    <SelectContent>
-                      {subcategories.map((subcategory) => (
-                        <SelectItem key={subcategory.id} value={subcategory.id}>
-                          {subcategory.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="isFeatured"
@@ -568,9 +593,9 @@ export const ProductForm: React.FC<ProductProps> = ({
                       checked={field.value}></Checkbox>
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>Featured</FormLabel>
+                    <FormLabel> Sản phẩm nổi bật ? </FormLabel>
                     <FormDescription>
-                      This will apper on the home page
+                      Nếu nhấn vào thì sản phẩm sẽ được hiển thị ở trang chủ
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -587,9 +612,9 @@ export const ProductForm: React.FC<ProductProps> = ({
                       checked={field.value}></Checkbox>
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>IsArchieved</FormLabel>
+                    <FormLabel>Tạm tắt</FormLabel>
                     <FormDescription>
-                      This is not show every where
+                      Nếu nhấn vào thì sản phẩm sẽ không hiển thị ở bất cứ đâu
                     </FormDescription>
                   </div>
                 </FormItem>
