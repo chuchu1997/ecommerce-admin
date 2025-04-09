@@ -224,6 +224,7 @@ const ToolbarPlugins = () => {
         </Toggle>
 
         <Button
+          type="button"
           variant="outline"
           size="sm"
           onClick={() => {

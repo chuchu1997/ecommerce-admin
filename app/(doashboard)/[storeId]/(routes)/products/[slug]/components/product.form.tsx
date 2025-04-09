@@ -188,6 +188,7 @@ export const ProductForm: React.FC<ProductProps> = ({
   }, [form.watch("categoryId"), categories]);
 
   const onSubmit = async (data: ProductFormValues) => {
+    console.log("ONSUBMIT CALL !!");
     try {
       setLoading(true);
       if (initialData) {

@@ -26,7 +26,7 @@ export async function GET(
     });
     return NextResponse.json(service, { status: 200 });
   } catch (err) {
-    console.log("[SERVICE_GET_ID]", err);
+    console.log("[SERVICE_GET_IDw]", err);
     return new NextResponse("Interal error", { status: 500 });
   }
 }

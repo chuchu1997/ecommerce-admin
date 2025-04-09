@@ -21,7 +21,7 @@ export default function ImagePickerDialog({
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", "nguyencuong");
-
+      console.log("CALL UPLOAD IMAGE TO CLOUDINARY ");
     const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
       method: "POST",
       body: formData,
@@ -71,7 +71,7 @@ export default function ImagePickerDialog({
         <DialogHeader>
           <DialogTitle>Chèn hình ảnh</DialogTitle>
         </DialogHeader>
-
+      
         <input
           ref={fileInputRef}
           type="file"
