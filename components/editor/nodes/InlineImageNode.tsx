@@ -2,8 +2,16 @@ import {
   DecoratorNode,
   LexicalEditor,
   SerializedLexicalNode,
+  $getSelection,
+  $isNodeSelection,
+  COMMAND_PRIORITY_LOW,
+  KEY_DELETE_COMMAND,
+  KEY_BACKSPACE_COMMAND,
+  $getNodeByKey,
 } from "lexical";
 import * as React from "react";
+import { mergeRegister } from "@lexical/utils";
+import { InlineImageComponent } from "@/components/editor/plugins/InlineImagePlugin/InlineImageComponent";
 
 export type SerializedInlineImageNode = {
   url: string;
@@ -64,22 +72,13 @@ export class InlineImageNode extends DecoratorNode<React.JSX.Element> {
 
   decorate(): React.JSX.Element {
     return (
-      <img
-        src={this.__url}
+      <InlineImageComponent
+        url={this.__url}
         alt={this.__altText}
         width={this.__width}
         height={this.__height}
-        style={{
-          float:
-            this.__position === "left"
-              ? "left"
-              : this.__position === "right"
-              ? "right"
-              : "none",
-          display: "block",
-          margin: "8px 0",
-          maxWidth: "100%",
-        }}
+        position={this.__position}
+        nodeKey={this.getKey()}
       />
     );
   }
@@ -110,4 +109,43 @@ export function $createInlineImageNode(
   position: "left" | "right" | "full"
 ): InlineImageNode {
   return new InlineImageNode(url, altText, width, height, position);
+}
+
+export function registerInlineImageCommands(editor: LexicalEditor) {
+  return mergeRegister(
+    editor.registerCommand(
+      KEY_DELETE_COMMAND,
+      () => {
+        const selection = $getSelection();
+        if ($isNodeSelection(selection)) {
+          const nodes = selection.getNodes();
+          for (const node of nodes) {
+            if (node instanceof InlineImageNode) {
+              node.remove();
+              return true;
+            }
+          }
+        }
+        return false;
+      },
+      COMMAND_PRIORITY_LOW
+    ),
+    editor.registerCommand(
+      KEY_BACKSPACE_COMMAND,
+      () => {
+        const selection = $getSelection();
+        if ($isNodeSelection(selection)) {
+          const nodes = selection.getNodes();
+          for (const node of nodes) {
+            if (node instanceof InlineImageNode) {
+              node.remove();
+              return true;
+            }
+          }
+        }
+        return false;
+      },
+      COMMAND_PRIORITY_LOW
+    )
+  );
 }

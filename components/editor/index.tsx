@@ -32,31 +32,35 @@ import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { ClickableLinkPlugin } from "@lexical/react/LexicalClickableLinkPlugin";
 import LinkEditor from "./plugins/LinkEditor";
 import { PreventLinkOpenPlugin } from "./plugins/PreventLinkPlugin";
+import LoadEditorStatePlugin from "./plugins/LoadStatePlugin";
 
-const SaveButton = () => {
-  const [editor] = useLexicalComposerContext();
+interface EditorInterface {
+  initialEditorState?: string;
+  onSave: (content: string) => void;
+}
 
-  const handleClick = useCallback(() => {
-    editor.getEditorState().read(() => {
-      // const editorStateJson = editor.getEditorState().toJSON();
+const EditorComponent: React.FC<EditorInterface> = ({
+  initialEditorState,
+  onSave,
+}) => {
+  const SaveButton = () => {
+    const [editor] = useLexicalComposerContext();
+    const handleClick = useCallback(() => {
+      editor.update(async () => {
+        const editorState = editor.getEditorState();
+        const serialized = editorState.toJSON();
+        const saveJSONString = JSON.stringify(serialized, null, 2);
+        onSave(saveJSONString);
+      });
+    }, [editor]);
 
-      const markdown = $convertToMarkdownString();
+    return (
+      <div className="px-8 pb-4">
+        <Button onClick={handleClick}>Lưu Nội Dung </Button>
+      </div>
+    );
+  };
 
-      console.log("MARKDOWN", markdown);
-
-      // const text = $getRoot().getTextContent();
-      // console.log("Editor content:", text);
-    });
-  }, [editor]);
-
-  return (
-    <div className="px-8 pb-4">
-      <Button onClick={handleClick}>Lưu Nội Dung </Button>
-    </div>
-  );
-};
-
-const EditorComponent: React.FC = () => {
   const config: InitialConfigType = {
     namespace: "lexical-editor",
 
@@ -96,7 +100,7 @@ const EditorComponent: React.FC = () => {
       InlineImageNode,
     ],
 
-    editorState: JSON.stringify(InitialEditorState),
+    // editorState: JSON.stringify(InitialEditorState),
 
     onError: (error) => {
       console.error(error);
@@ -134,6 +138,9 @@ const EditorComponent: React.FC = () => {
         <ClickableLinkPlugin />
         <LinkEditor /> {/* Custom component để chỉnh sửa link */}
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+        {initialEditorState && (
+          <LoadEditorStatePlugin initialEditorState={initialEditorState} />
+        )}
         {/* ✅ Save button inside LexicalComposer */}
         <SaveButton />
       </div>

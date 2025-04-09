@@ -7,7 +7,10 @@ import {
 } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useEffect } from "react";
-import { $createInlineImageNode } from "../../nodes/InlineImageNode";
+import {
+  $createInlineImageNode,
+  registerInlineImageCommands,
+} from "../../nodes/InlineImageNode";
 
 export const INSERT_INLINE_IMAGE_COMMAND = createCommand<{
   url: string;
@@ -18,7 +21,10 @@ export function InlineImagePlugin() {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    return editor.registerCommand(
+    // Đăng ký cả hai loại command: insert và delete
+    const removeImageCommand = registerInlineImageCommands(editor);
+
+    const insertImageCommand = editor.registerCommand(
       INSERT_INLINE_IMAGE_COMMAND,
       ({ url, position }) => {
         editor.update(() => {
@@ -31,11 +37,16 @@ export function InlineImagePlugin() {
           );
           $insertNodes([imageNode]);
         });
-
         return true;
       },
       COMMAND_PRIORITY_NORMAL
     );
+
+    // Cleanup khi unmount
+    return () => {
+      removeImageCommand();
+      insertImageCommand();
+    };
   }, [editor]);
 
   return null;
