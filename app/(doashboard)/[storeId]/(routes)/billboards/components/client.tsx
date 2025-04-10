@@ -8,6 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import { BillboardColumn, columns } from "./column";
 import { DataTable } from "@/components/ui/data-table";
 import { ApiList } from "@/components/ui/api-list";
+import { useEffect, useState } from "react";
 
 interface BillboardClientProps {
   data: BillboardColumn[];
@@ -17,6 +18,16 @@ export const BillboardClient = (props: BillboardClientProps) => {
 
   const params = useParams();
   const router = useRouter();
+    const [isMounted, setIsMounted] = useState(false);
+  
+      useEffect(()=>{
+        setIsMounted(true);
+        
+      },[ ])
+      
+      if (!isMounted) {
+        return null;
+      }
 
   return (
     <>

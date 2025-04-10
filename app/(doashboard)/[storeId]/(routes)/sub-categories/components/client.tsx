@@ -8,6 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import { CategoryColumn, columns } from "./column";
 import { DataTable } from "@/components/ui/data-table";
 import { ApiList } from "@/components/ui/api-list";
+import { useEffect, useState } from "react";
 
 interface CategoryClientProps {
   data: CategoryColumn[];
@@ -17,6 +18,16 @@ export const CategoryClient = (props: CategoryClientProps) => {
 
   const params = useParams();
   const router = useRouter();
+    const [isMounted, setIsMounted] = useState(false);
+  
+      useEffect(()=>{
+        setIsMounted(true);
+        
+      },[ ])
+      
+      if (!isMounted) {
+        return null;
+      }
 
   return (
     <>
@@ -37,7 +48,7 @@ export const CategoryClient = (props: CategoryClientProps) => {
       <DataTable searchKey="name" columns={columns} data={data}></DataTable>
       <Heading title={"API"} description={"API Call for billboards"} />
       <Separator />
-      <ApiList entityName="categories" entityIdName="categoriesId" />
+      <ApiList entityName="sub-categories" entityIdName="slug" />
     </>
   );
 };

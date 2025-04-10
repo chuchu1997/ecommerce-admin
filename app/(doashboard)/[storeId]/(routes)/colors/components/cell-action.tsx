@@ -16,6 +16,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import axios from "axios";
 import { AlertModal } from "@/components/modals/alert-modal";
+import ActionDropdown from "@/components/action-dropdown";
 
 interface CellActionProps {
   data: ColorsColumn;
@@ -26,17 +27,17 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const onCopy = (id: string) => {
-    navigator.clipboard.writeText(id);
+  const onCopy = () => {
+    navigator.clipboard.writeText(data.id);
     toast.success("Copy Color ID Thành Công");
   };
-  const onEdit = (id: string) => {
-    router.push(`/${params.storeId}/colors/${id}`);
+  const onEdit = () => {
+    router.push(`/${params.storeId}/colors/${data.id}`);
   };
-  const onDelete = async (id: string) => {
+  const onDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`/api/${params.storeId}/colors/${id}`);
+      await axios.delete(`/api/${params.storeId}/colors/${data.id}`);
       router.refresh();
       toast.success("Xoá Color thành công !!");
     } catch (err) {
@@ -52,41 +53,20 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         isOpen={open}
         onClose={() => setOpen(false)}
         onConfirm={() => {
-          onDelete(data.id);
+      onDelete();
+      
         }}
       />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant={"ghost"} size={"icon"} className="h-8 w-8 p-0">
-            <span className="sr-only">Open Menu</span>
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel className="">Actions</DropdownMenuLabel>
-          <DropdownMenuItem
-            className="flex items-center mb-2 cursor-pointer"
-            onClick={() => onCopy(data.id)}
-          >
-            <Copy className="mr-2 h-4 w-4" />
-            <span className="text-sm font-base">Copy ID</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="flex items-center mb-2 cursor-pointer"
-            onClick={() => onEdit(data.id)}
-          >
-            <Edit className="mr-2 h-4 w-4" />
-            <span>Edit</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="flex items-center mb-2 cursor-pointer"
-            onClick={() => setOpen(true)}
-          >
-            <Trash className="mr-2 h-4 w-4" />
-            <span> Delete</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+
+<ActionDropdown   
+       onCopy={onCopy}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        onOpenDeleteModal={() => setOpen(true)}
+        
+        />
+   
+
     </>
   );
 };

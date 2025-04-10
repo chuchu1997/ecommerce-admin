@@ -8,6 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import { SizesColumn, columns } from "./column";
 import { DataTable } from "@/components/ui/data-table";
 import { ApiList } from "@/components/ui/api-list";
+import { useEffect, useState } from "react";
 
 interface SizesClientProps {
   data: SizesColumn[];
@@ -17,6 +18,16 @@ export const SizesClient = (props: SizesClientProps) => {
 
   const params = useParams();
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(()=>{
+      setIsMounted(true);
+      
+    },[ ])
+    
+    if (!isMounted) {
+      return null;
+    }
 
   return (
     <>

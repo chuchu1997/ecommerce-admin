@@ -8,6 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ColorsColumn, columns } from "./column";
 import { DataTable } from "@/components/ui/data-table";
 import { ApiList } from "@/components/ui/api-list";
+import { useEffect, useState } from "react";
 
 
   //  id:color.id,
@@ -22,7 +23,16 @@ export const ColorsClient = (props: ColorsClientProps) => {
 
   const params = useParams();
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
 
+    useEffect(()=>{
+      setIsMounted(true);
+      
+    },[ ])
+    
+    if (!isMounted) {
+      return null;
+    }
   return (
     <>
       <div className="flex items-center justify-between ">

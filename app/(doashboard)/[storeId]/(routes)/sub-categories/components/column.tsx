@@ -20,7 +20,7 @@ export type CategoryColumn = {
 export const columns: ColumnDef<CategoryColumn>[] = [
   {
     accessorKey: "name",
-    header: "Name",
+    header: "Tên danh mục ",
     cell: ({ row }) => row.original.name,
   },
 
@@ -33,18 +33,18 @@ export const columns: ColumnDef<CategoryColumn>[] = [
 
   {
     accessorKey: "parentCategory",
-    header: "Parent Category",
+    header: "Danh mục cha ",
     cell: ({ row }) => row.original.parentCategory,
   },
   {
     accessorKey: "billboardLabel",
-    header: "Billboard Label",
+    header: "Tên hình đại diện",
     cell: ({ row }) => row.original.billboardLabel,
   },
   
   {
     accessorKey: "billboardImage",
-    header: "Billboard Image",
+    header: "Hình đại diện",
    cell: ({ row }) => (
          <div className="relative w-[80px] h-[80px] ">
            <Image
@@ -58,11 +58,11 @@ export const columns: ColumnDef<CategoryColumn>[] = [
   },
   {
     accessorKey: "createAt",
-    header: "Date",
+    header: "Ngày tạo",
   },
 
   {
-    header: "Actions",
+    header: "Thao tác ",
     id: "actions",
     cell: ({ row }) => <CellAction data={row.original} />,
   },

@@ -8,15 +8,27 @@ import { useParams, useRouter } from "next/navigation";
 import { ServiceColumn, columns } from "./column";
 import { DataTable } from "@/components/ui/data-table";
 import { ApiList } from "@/components/ui/api-list";
+import { useEffect, useState } from "react";
 
 interface ServiceClientProps {
   data: ServiceColumn[];
 }
 export const ServiceClient = (props: ServiceClientProps) => {
-  const { data } = props;
-
   const params = useParams();
   const router = useRouter();
+
+  const [isMounted , setMounted] = useState(false);
+  useEffect(()=>{
+    setMounted(true);
+
+  },[ ])
+  
+  if (!isMounted) {
+    return null;
+  }
+  const { data } = props;
+
+
 
   return (
     <>
@@ -37,7 +49,7 @@ export const ServiceClient = (props: ServiceClientProps) => {
       <DataTable searchKey="name" columns={columns} data={data}></DataTable>
       <Heading title={"API"} description={"API Call for Servies"} />
       <Separator />
-      <ApiList entityName="services" entityIdName="servicesId" />
+      <ApiList entityName="services" entityIdName="slug" />
     </>
   );
 };
