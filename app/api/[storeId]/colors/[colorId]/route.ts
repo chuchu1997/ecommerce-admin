@@ -4,25 +4,24 @@ import { getCurrentUser } from "@/lib/auth/utils";
 import prismadb from "@/lib/primadb";
 import { NextResponse } from "next/server";
 
+type Params = Promise<{ storeId: string; colorId: string }>;
+
 export async function GET(
   req: Request,
 
-  { params }: { params: { colorId: string } }
+  props: { params: Params }
 ) {
   try {
-    const { colorId } = await params;
+    const params = await props.params;
+    const { colorId, storeId } = params;
 
     if (!colorId) {
       return new NextResponse("Color Id is required ", { status: 400 });
     }
 
-    // const billboards = await prismadb.billboard.findUnique({
-    //   where: {
-    //     id: billboardId,
-    //   },
-    // });
     const color = await prismadb.size.findUnique({
       where: {
+        storeId: storeId,
         id: colorId,
       },
     });
@@ -34,16 +33,14 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { storeId: string; colorId: string } }
-) {
+export async function PATCH(req: Request, props: { params: Params }) {
   try {
     const user = await getCurrentUser();
     const body = await req.json();
     const { name, hexCode } = body;
+    const params = await props.params;
+    const { storeId, colorId } = params;
 
-    const { storeId, colorId } = await params;
     if (!user) {
       return new NextResponse("Unauthenticaed", { status: 401 });
     }
@@ -89,14 +86,12 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { storeId: string; colorId: string } }
-) {
+export async function DELETE(req: Request, props: { params: Params }) {
   try {
     const user = await getCurrentUser();
 
-    const { storeId, colorId } = await params;
+    const params = await props.params;
+    const { storeId, colorId } = params;
 
     if (!user) {
       return new NextResponse("Unauthenticaed", { status: 401 });

@@ -4,14 +4,19 @@ import { getCurrentUser } from "@/lib/auth/utils";
 import prismadb from "@/lib/primadb";
 import { NextResponse } from "next/server";
 
+type Params = Promise<{ storeId: string; sizeId: string }>;
+
 export async function GET(
   req: Request,
 
-  { params }: { params: { sizeId: string } }
+  props: { params: Params }
 ) {
   try {
-    const { sizeId } = await params;
-
+    const params = await props.params;
+    const { storeId, sizeId } = params;
+    if (!storeId) {
+      return new NextResponse("Store Id is required  ", { status: 400 });
+    }
     if (!sizeId) {
       return new NextResponse("Size Id is required ", { status: 400 });
     }
@@ -34,16 +39,14 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { storeId: string; sizeId: string } }
-) {
+export async function PATCH(req: Request, props: { params: Params }) {
   try {
     const user = await getCurrentUser();
     const body = await req.json();
     const { name, description } = body;
+    const params = await props.params;
 
-    const { storeId, sizeId } = await params;
+    const { storeId, sizeId } = params;
     if (!user) {
       return new NextResponse("Unauthenticaed", { status: 401 });
     }
@@ -88,13 +91,14 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { storeId: string; sizeId: string } }
+
+  props: { params: Params }
 ) {
   try {
     const user = await getCurrentUser();
 
-    const { storeId, sizeId } = await params;
-
+    const params = await props.params;
+    const { storeId, sizeId } = params;
     if (!user) {
       return new NextResponse("Unauthenticaed", { status: 401 });
     }

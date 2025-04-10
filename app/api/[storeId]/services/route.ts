@@ -3,14 +3,16 @@
 import { getCurrentUser } from "@/lib/auth/utils";
 import prismadb from "@/lib/primadb";
 import { NextResponse } from "next/server";
+type Params = Promise<{ storeId: string }>;
 
 export async function GET(
   req: Request,
 
-  { params }: { params: { storeId: string } }
+  props: { params: Params }
 ) {
   try {
-    const { storeId } = await params;
+    const params = await props.params;
+    const { storeId } = params;
     const { searchParams } = new URL(req.url);
     const limit = parseInt(searchParams.get("limit") || "4"); // Mặc định 4 sản phẩm mỗi lần
     const currentPage = parseInt(searchParams.get("currentPage") || "1"); // Trang mặc định là 1
@@ -50,11 +52,11 @@ export async function GET(
 export async function POST(
   req: Request,
 
-  { params }: { params: { storeId: string } }
+  props: { params: Params }
 ) {
   try {
-    const { storeId } = await params;
-
+    const params = await props.params;
+    const { storeId } = params;
     const user = await getCurrentUser();
 
     const body = await req.json();

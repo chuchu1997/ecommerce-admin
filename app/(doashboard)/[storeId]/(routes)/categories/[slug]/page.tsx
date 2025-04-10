@@ -13,6 +13,7 @@ const CategogyPage = async (props: CategoryPage) => {
   const category = await prismadb.category.findUnique({
     where: {
       slug:slug,
+     
     },
   });
   const billboards = await prismadb.billboard.findMany({
@@ -20,12 +21,14 @@ const CategogyPage = async (props: CategoryPage) => {
       storeId: storeId,
     },
     select: {
+      isActiveBanner:true,
       id: true,
       storeId: true,
       createAt: true,
       updateAt: true,
       label: true,
       imageUrl: true,
+   
     },
   });
 
@@ -35,6 +38,7 @@ const CategogyPage = async (props: CategoryPage) => {
         <CategoryForm
           billboards={billboards}
           initialData={category}
+          
         ></CategoryForm>
       </div>
     </div>

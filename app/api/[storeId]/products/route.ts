@@ -5,13 +5,13 @@ import prismadb from "@/lib/primadb";
 import { NextResponse } from "next/server";
 import { Size } from "@prisma/client";
 
-export async function GET(
-  req: Request,
+type Params = Promise<{ storeId: string }>;
 
-  { params }: { params: { storeId: string } }
-) {
+export async function GET(req: Request, props: { params: Params }) {
   try {
-    const { storeId } = await params;
+    const params = await props.params;
+    const { storeId } = params;
+
     const { searchParams } = new URL(req.url);
     const categoryId = searchParams.get("categoryId") || undefined;
     const isFeatured = searchParams.get("isFeatured");
@@ -52,10 +52,11 @@ export async function GET(
 export async function POST(
   req: Request,
 
-  { params }: { params: { storeId: string } }
+  props: { params: Params }
 ) {
   try {
-    const { storeId } = await params;
+    const params = await props.params;
+    const { storeId } = params;
 
     const user = await getCurrentUser();
 

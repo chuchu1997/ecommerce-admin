@@ -4,14 +4,16 @@ import { getCurrentUser } from "@/lib/auth/utils";
 import prismadb from "@/lib/primadb";
 import { NextResponse } from "next/server";
 
+type Params = Promise<{ storeId: string }>;
+
 export async function GET(
   req: Request,
 
-  { params }: { params: { storeId: string } }
+  props: { params: Params }
 ) {
   try {
-    const { storeId } = await params;
-
+    const params = await props.params;
+    const { storeId } = params;
     if (!storeId) {
       return new NextResponse("Store Id is required ", { status: 400 });
     }
@@ -31,10 +33,11 @@ export async function GET(
 export async function POST(
   req: Request,
 
-  { params }: { params: { storeId: string } }
+  props: { params: Params }
 ) {
   try {
-    const { storeId } = await params;
+    const params = await props.params;
+    const { storeId } = params;
 
     const user = await getCurrentUser();
 
@@ -66,7 +69,7 @@ export async function POST(
     if (!storeByUserId) {
       return new NextResponse("Forbiden ", { status: 403 });
     }
-    const size = await prismadb.color.create({
+    const color = await prismadb.color.create({
       data: {
         name,
         hexCode,
@@ -74,7 +77,7 @@ export async function POST(
       },
     });
 
-    return NextResponse.json(size, { status: 200 });
+    return NextResponse.json(color, { status: 200 });
   } catch (err) {
     console.log("[COLOR_POST]", err);
     return new NextResponse("Interal error", { status: 500 });

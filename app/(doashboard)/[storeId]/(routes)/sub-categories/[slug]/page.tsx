@@ -36,6 +36,7 @@ const CategogyPage = async (props: CategoryPage) => {
       updateAt: true,
       label: true,
       imageUrl: true,
+      isActiveBanner:true
     },
   });
 

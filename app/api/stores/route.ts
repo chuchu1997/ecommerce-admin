@@ -5,7 +5,6 @@ import prismadb from "@/lib/primadb";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
-  console.log("GET CALL");
   return new NextResponse("OK", { status: 200 });
 }
 

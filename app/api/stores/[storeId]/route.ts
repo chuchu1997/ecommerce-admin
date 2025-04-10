@@ -4,16 +4,16 @@ import { getCurrentUser } from "@/lib/auth/utils";
 import prismadb from "@/lib/primadb";
 import { NextResponse } from "next/server";
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { storeId: string } }
-) {
+type Params = Promise<{ storeId: string }>;
+
+export async function PATCH(req: Request, props: { params: Params }) {
   try {
     const user = await getCurrentUser();
     const body = await req.json();
     const { name } = body;
 
-    const { storeId } = await params;
+    const params = await props.params;
+    const { storeId } = params;
     if (!user) {
       return new NextResponse("Unauthenticaed", { status: 401 });
     }
@@ -43,14 +43,12 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { storeId: string } }
-) {
+export async function DELETE(req: Request, props: { params: Params }) {
   try {
     const user = await getCurrentUser();
 
-    const { storeId } = await params;
+    const params = await props.params;
+    const { storeId } = params;
 
     if (!user) {
       return new NextResponse("Unauthenticaed", { status: 401 });

@@ -2,6 +2,7 @@
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useRef, useState } from "react";
+import { InlineImageNode } from "./editor/nodes/InlineImageNode";
 
 export default function ResizableImage({
   url,
@@ -36,7 +37,7 @@ export default function ResizableImage({
         const node = editor.getEditorState().read(() =>
           editor.getEditorState()._nodeMap.get(nodeKey)
         );
-        if (node) {
+        if (node instanceof InlineImageNode) {
           node.__width = newWidth;
         }
       });

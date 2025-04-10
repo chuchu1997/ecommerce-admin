@@ -4,13 +4,14 @@ import { getCurrentUser } from "@/lib/auth/utils";
 import prismadb from "@/lib/primadb";
 import { NextResponse } from "next/server";
 
-export async function GET(
-  req: Request,
+type Params = Promise<{ storeId: string }>;
 
-  { params }: { params: { storeId: string } }
-) {
+export async function GET(req: Request, props: { params: Params }) {
   try {
-    const { storeId } = await params;
+    const params = await props.params;
+    const { storeId } = params;
+
+    console.log("STORE ID", storeId);
 
     if (!storeId) {
       return new NextResponse("Store Id is required ", { status: 400 });

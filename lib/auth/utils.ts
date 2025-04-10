@@ -62,6 +62,8 @@ export async function getCurrentUser(): Promise<User | null> {
         return user;
 
       }
+      return user;
+      
     
     }catch(err){
       return null;

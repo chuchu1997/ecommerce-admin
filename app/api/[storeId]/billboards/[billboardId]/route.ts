@@ -4,13 +4,19 @@ import { getCurrentUser } from "@/lib/auth/utils";
 import prismadb from "@/lib/primadb";
 import { NextResponse } from "next/server";
 
+type Params = Promise<{
+  storeId: string;
+  billboardId: string;
+}>;
+
 export async function GET(
   req: Request,
 
-  { params }: { params: { billboardId: string } }
+  props: { params: Params }
 ) {
   try {
-    const { billboardId } = await params;
+    const params = await props.params;
+    const { billboardId } = params;
 
     if (!billboardId) {
       return new NextResponse("Billboard Id is required ", { status: 400 });
@@ -31,14 +37,16 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { storeId: string; billboardId: string } }
+
+  props: { params: Params }
 ) {
   try {
     const user = await getCurrentUser();
     const body = await req.json();
     const { label, imageUrl, isActiveBanner } = body;
+    const params = await props.params;
 
-    const { storeId, billboardId } = await params;
+    const { storeId, billboardId } = params;
     if (!user) {
       return new NextResponse("Unauthenticaed", { status: 401 });
     }
@@ -83,14 +91,11 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { storeId: string; billboardId: string } }
-) {
+export async function DELETE(req: Request, props: { params: Params }) {
   try {
     const user = await getCurrentUser();
-
-    const { storeId, billboardId } = await params;
+    const params = await props.params;
+    const { storeId, billboardId } = params;
 
     if (!user) {
       return new NextResponse("Unauthenticaed", { status: 401 });

@@ -4,13 +4,11 @@ import { getCurrentUser } from "@/lib/auth/utils";
 import prismadb from "@/lib/primadb";
 import { NextResponse } from "next/server";
 
-export async function GET(
-  req: Request,
-
-  { params }: { params: { slug: string } }
-) {
+type Params = Promise<{ storeId: string; slug: string }>;
+export async function GET(req: Request, props: { params: Params }) {
   try {
-    const { slug } = await params;
+    const params = await props.params;
+    const { slug } = params;
 
     if (!slug) {
       return new NextResponse("Product Id is required ", { status: 400 });
@@ -34,10 +32,7 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { storeId: string; slug: string } }
-) {
+export async function PATCH(req: Request, props: { params: Params }) {
   try {
     const user = await getCurrentUser();
     const body = await req.json();
@@ -57,7 +52,9 @@ export async function PATCH(
       viewCount,
       ratingCount,
     } = body;
-    const { storeId, slug } = await params;
+
+    const params = await props.params;
+    const { storeId, slug } = params;
 
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -163,14 +160,12 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { storeId: string; slug: string } }
-) {
+export async function DELETE(req: Request, props: { params: Params }) {
   try {
     const user = await getCurrentUser();
 
-    const { storeId, slug } = await params;
+    const params = await props.params;
+    const { storeId, slug } = params;
 
     if (!user) {
       return new NextResponse("Unauthenticaed", { status: 401 });
