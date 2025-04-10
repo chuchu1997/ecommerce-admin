@@ -69,7 +69,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel className="">Actions</DropdownMenuLabel>
+          <DropdownMenuLabel className="">Thao tác </DropdownMenuLabel>
           <DropdownMenuItem
             className="flex items-center mb-2 cursor-pointer"
             onClick={() => onCopy(data.id)}
@@ -82,14 +82,14 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
             onClick={() => onEdit()}
           >
             <Edit className="mr-2 h-4 w-4" />
-            <span>Edit</span>
+            <span>Chỉnh sửa</span>
           </DropdownMenuItem>
           <DropdownMenuItem
             className="flex items-center mb-2 cursor-pointer"
             onClick={() => setOpen(true)}
           >
             <Trash className="mr-2 h-4 w-4" />
-            <span> Delete</span>
+            <span>Xóa </span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

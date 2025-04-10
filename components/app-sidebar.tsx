@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   PackageSearchIcon,
@@ -9,7 +9,8 @@ import {
   ChartSplineIcon,
   ScalingIcon,
   SettingsIcon,
-} from "lucide-react";
+  ChevronDownIcon,
+} from "lucide-react"
 
 import {
   Sidebar,
@@ -20,95 +21,175 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from "@/components/ui/sidebar"
 
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@/components/ui/separator"
+import { useParams, usePathname } from "next/navigation"
+import { useState } from "react"
+import AvatarButton from "./avatar-button"
+import { cn } from "@/lib/utils"
 
-import { useParams, usePathname } from "next/navigation";
-import AvatarButton from "./avatar-button";
+interface RouteItem {
+  href: string
+  label: string
+  active: boolean
+  icon: React.ElementType
+}
 
 export function AppSidebar() {
-  const pathname = usePathname();
-  const params = useParams();
+  const pathname = usePathname()
+  const params = useParams()
+  const routes = {
+    overview: [
+      {
+        href: `/${params.storeId}`,
+        label: "Tổng quan",
+        icon: ChartSplineIcon,
+        active: pathname === `/${params.storeId}`,
+      },
+    ],
+    products: [
+      
+      {
+        href: `/${params.storeId}/products`,
+        label: "Sản phẩm",
+        icon: PackageSearchIcon,
+        active: pathname === `/${params.storeId}/products`,
+      },
+      {
+        href: `/${params.storeId}/services`,
+        label: "Dịch vụ",
+        icon: PackageSearchIcon,
+        active: pathname === `/${params.storeId}/services`,
+      },
+    
+      {
+        href: `/${params.storeId}/sizes`,
+        label: "Kích thước",
+        icon: ScalingIcon,
+        active: pathname === `/${params.storeId}/sizes`,
+      },
+      {
+        href: `/${params.storeId}/colors`,
+        label: "Màu sắc",
+        icon: PaletteIcon,
+        active: pathname === `/${params.storeId}/colors`,
+      },
+    ],
+    catalog: [
+      {
+        href: `/${params.storeId}/billboards`,
+        label: "Hình ảnh",
+        icon: FileImageIcon,
+        active: pathname === `/${params.storeId}/billboards`,
+      },
+      {
+        href: `/${params.storeId}/categories`,
+        label: "Danh mục",
+        icon: BookMinusIcon,
+        active: pathname === `/${params.storeId}/categories`,
+      },
+      {
+        href: `/${params.storeId}/sub-categories`,
+        label: "Danh mục con",
+        icon: BookCopyIcon,
+        active: pathname === `/${params.storeId}/sub-categories`,
+      },
+    ],
+    settings: [
+      {
+        href: `/${params.storeId}/settings`,
+        label: "Cài đặt",
+        icon: SettingsIcon,
+        active: pathname === `/${params.storeId}/settings`,
+      },
+    ],
+  }
 
-  const routes = [
-    {
-      href: `/${params.storeId}`,
-      label: "Tổng quan ",
-      active: pathname === `/${params.storeId}`,
-      icon: ChartSplineIcon,
-    },
-    {
-      href: `/${params.storeId}/services`,
-      label: "Quản lý Dich vụ",
-      active: pathname === `/${params.storeId}/services`,
-      icon: PackageSearchIcon,
-    },
+  const [openProductGroup, setOpenProductGroup] = useState(true)
+  const [openCatalogGroup, setOpenCatalogGroup] = useState(true)
 
-    {
-      href: `/${params.storeId}/products`,
-      label: "Quản lý Sản phẩm ",
-      active: pathname === `/${params.storeId}/products`,
-      icon: PackageSearchIcon,
-    },
-    {
-      href: `/${params.storeId}/sizes`,
-      label: "Quản lý Kích thước (size)",
-      active: pathname === `/${params.storeId}/sizes`,
-      icon: ScalingIcon,
-    },
-    {
-      href: `/${params.storeId}/colors`,
-      label: "Quản lý Màu sắc (Sản phẩm vv...v)",
-      active: pathname === `/${params.storeId}/sizes`,
-      icon: PaletteIcon,
-    },
-    {
-      href: `/${params.storeId}/billboards`,
-      label: "Quản lý Hình ảnh (Billboard)",
-      active: pathname === `/${params.storeId}/billboards`,
-      icon: FileImageIcon,
-    },
+  const renderMenuItems = (items: RouteItem[]) => (
+    <>
+      {items.map((route) => {
+        const Icon = route.icon
+        return (
+          <SidebarMenuItem key={route.href} className="py-1">
+            <SidebarMenuButton asChild>
+              <a
+                href={route.href}
+                className={cn(
+                  "flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-muted",
+                  route.href === pathname && "bg-muted font-semibold"
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                <span>{route.label}</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        )
+      })}
+    </>
+  )
 
-    {
-      href: `/${params.storeId}/categories`,
-      label: "Quản lý Danh mục ",
-      active: pathname === `/${params.storeId}/categories`,
-      icon: BookMinusIcon,
-    },
-    {
-      href: `/${params.storeId}/sub-categories`,
-      label: "Quản lý Danh mục con",
-      active: pathname === `/${params.storeId}/sub-categories`,
-      icon: BookCopyIcon,
-    },
-
-    {
-      href: `/${params.storeId}/settings`,
-      label: "Cài đặt ",
-      active: pathname === `/${params.storeId}/settings`,
-      icon: SettingsIcon,
-    },
-  ];
+  const CollapsibleGroup = ({
+    label,
+    isOpen,
+    onToggle,
+    children,
+  }: {
+    label: string
+    isOpen: boolean
+    onToggle: () => void
+    children: React.ReactNode
+  }) => (
+    <SidebarGroup>
+      <SidebarGroupLabel
+        onClick={onToggle}
+        className="flex justify-between items-center cursor-pointer select-none "
+      >
+        {label}
+        <ChevronDownIcon
+          className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")}
+        />
+      </SidebarGroupLabel>
+      {isOpen && <SidebarGroupContent><SidebarMenu>{children}</SidebarMenu></SidebarGroupContent>}
+    </SidebarGroup>
+  )
 
   return (
-    <Sidebar>
-      <SidebarContent>
+    <Sidebar className = "">
+      <SidebarContent className="bg-white">
         <SidebarGroup>
-          <SidebarGroupLabel>Admin Application (Store)</SidebarGroupLabel>
+          <SidebarGroupLabel>Admin Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {routes.map((route) => (
-                <SidebarMenuItem key={route.href} className="py-1">
-                  <SidebarMenuButton asChild>
-                    <a href={route.href}>
-                      <route.icon />
-                      <span>{route.label}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {renderMenuItems(routes.overview)}
             </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <CollapsibleGroup
+          label="Quản lý Sản phẩm"
+          isOpen={openProductGroup}
+          onToggle={() => setOpenProductGroup(!openProductGroup)}
+        >
+          {renderMenuItems(routes.products)}
+        </CollapsibleGroup>
+
+        <CollapsibleGroup
+          label="Danh mục & Hình ảnh"
+          isOpen={openCatalogGroup}
+          onToggle={() => setOpenCatalogGroup(!openCatalogGroup)}
+        >
+          {renderMenuItems(routes.catalog)}
+        </CollapsibleGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Cài đặt</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>{renderMenuItems(routes.settings)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
@@ -116,5 +197,5 @@ export function AppSidebar() {
         <AvatarButton className="mx-4 bg-green-300" />
       </SidebarContent>
     </Sidebar>
-  );
+  )
 }

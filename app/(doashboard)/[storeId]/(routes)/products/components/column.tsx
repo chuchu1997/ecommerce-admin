@@ -25,7 +25,7 @@ export type ProductColumn = {
 export const columns: ColumnDef<ProductColumn>[] = [
   {
     accessorKey: "name",
-    header: "Name",
+    header: "Tên san phẩm",
     cell: ({ row }) => row.original.name,
   },
   {
@@ -35,7 +35,7 @@ export const columns: ColumnDef<ProductColumn>[] = [
   },
   {
     accessorKey: "image",
-    header: "Image",
+    header: "Hình ảnh",
     cell: ({ row }) => (
       <div className="relative w-[80px] h-[80px] ">
         <Image
@@ -49,7 +49,7 @@ export const columns: ColumnDef<ProductColumn>[] = [
   },
   {
     accessorKey: "category",
-    header: "Category",
+    header: "Thuộc Danh Mục",
     cell: ({ row }) => (
       <div className="capitalize">{row.original.category}</div>
     ),
@@ -57,7 +57,7 @@ export const columns: ColumnDef<ProductColumn>[] = [
 
   {
     accessorKey: "subCategory",
-    header: "SubCategory",
+    header: "Danh mục con ",
     cell: ({ row }) => (
       <div className="capitalize">{row.original.subCategory}</div>
     ),
@@ -71,25 +71,25 @@ export const columns: ColumnDef<ProductColumn>[] = [
 
   {
     accessorKey: "price",
-    header: "Price",
+    header: "Giá",
     cell: ({ row }) => row.original.price,
   },
 
   {
     accessorKey: "isFeatured",
-    header: "IsFeatured",
+    header: "Nổi bật",
   },
 
   {
     accessorKey: "createAt",
-    header: "Date",
+    header: "Ngày tạo",
   },
   {
     accessorKey: "stock",
-    header: "Stock",
+    header: "Số lượng",
   },
   {
-    header: "Actions",
+    header: "Thao tác",
     id: "actions",
     cell: ({ row }) => <CellAction data={row.original} />,
   },
