@@ -159,7 +159,7 @@ export function AppSidebar() {
   )
 
   return (
-    <Sidebar className = "">
+    <Sidebar className = " top-0 h-screen w-64 z-50 shadow-md">
       <SidebarContent className="bg-white">
         <SidebarGroup>
           <SidebarGroupLabel>Admin Application</SidebarGroupLabel>

@@ -1,6 +1,8 @@
 import { AppSidebar } from "@/components/app-sidebar";
+import { GlobalRouteLoader } from "@/components/global-loading";
 import Navbar from "@/components/navbar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import Footer from "@/components/ui/footer";
+import { SidebarProvider,SidebarTrigger } from "@/components/ui/sidebar";
 import { getCurrentUser } from "@/lib/auth/utils";
 import prismadb from "@/lib/primadb";
 import { redirect } from "next/navigation";
@@ -29,15 +31,18 @@ export default async function DashboardLayout(props: LayoutProps) {
 
   return (
     <>
-      <SidebarProvider>
+           <GlobalRouteLoader />
+        <SidebarProvider>
         <AppSidebar />
-        <SidebarTrigger />
+
+     
         <div className="wrapper-dashboard   w-full">
+      
           <Navbar />
-          <div className="min-h-screen container mx-auto mt-[10px]">
+          <div className="min-h-[600px] container mx-auto mt-[10px]">
             {children}
           </div>
-          <div>FOOTER</div>
+          <Footer/>
         </div>
       </SidebarProvider>
     </>

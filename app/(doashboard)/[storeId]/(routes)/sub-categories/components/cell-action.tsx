@@ -53,10 +53,13 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           onDelete();
         }}
       />
-      <ActionDropdown    onCopy={onCopy}
+      <ActionDropdown   
+       onCopy={onCopy}
         onEdit={onEdit}
         onDelete={onDelete}
-        onOpenDeleteModal={() => setOpen(true)}/>
+        onOpenDeleteModal={() => setOpen(true)}
+        
+        />
    
     </>
   );

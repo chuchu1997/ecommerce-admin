@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { jwtVerify } from "jose";
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "");
 
 export async function middleware(request: NextRequest) {
+
   // Các đường dẫn công khai không cần đăng nhập
   const publicPaths = ["/login", "/register", "/public", "/api"];
 
@@ -37,19 +40,24 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
-    // Gửi yêu cầu xác thực token đến API nội bộ
-    const verifyResponse = await fetch(`${protocol}//${host}/api/auth/verify`, {
-      method: "GET",
-      headers: {
-        Cookie: `token=${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (verifyResponse.status !== 200) {
-      console.warn("❌ Token invalid, redirecting to login.");
+ 
+    let isValidToken =  await jwtVerify(token, JWT_SECRET);
+      if(!isValidToken){
       return NextResponse.redirect(new URL("/login", `${protocol}//${host}`));
-    }
+      }
+    // Gửi yêu cầu xác thực token đến API nội bộ
+    // const verifyResponse = await fetch(`${protocol}//${host}/api/auth/verify`, {
+    //   method: "GET",
+    //   headers: {
+    //     Cookie: `token=${token}`,
+    //     "Content-Type": "application/json",
+    //   },
+    // });
+
+    // if (verifyResponse.status !== 200) {
+    //   console.warn("❌ Token invalid, redirecting to login.");
+    //   return NextResponse.redirect(new URL("/login", `${protocol}//${host}`));
+    // }
 
     // ✅ Token hợp lệ
     return res;
