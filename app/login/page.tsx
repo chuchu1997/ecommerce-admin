@@ -1,5 +1,5 @@
 'use client';
-import React  from 'react';
+import React, { useEffect }  from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod';
@@ -20,6 +20,9 @@ type LoginFormData = z.infer<typeof formSchema>;
 
 export default function LoginForm() {
   const {  login,loading  } = useAuthStore();
+  useEffect(()=>{
+    console.log("MOUNTED !!");
+  },[])
   
     //   const { login, loading } = useAuthStore();
 
@@ -34,9 +37,9 @@ export default function LoginForm() {
 
   // Form submission handler
   const onSubmit = async (data: LoginFormData) => {
+
     try {
        await login(data.name,data.password);
-   
       
     //   await login(data.name, data.password);
     } catch (error) {
@@ -44,7 +47,9 @@ export default function LoginForm() {
       toast.error(error instanceof Error ? error.message : String(error))
       console.error('Login error', error);
     }finally{
+      console.log("CO GOI REDIRECT VE ./ ")
       redirect('/')
+      
     }
   };
 

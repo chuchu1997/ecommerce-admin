@@ -3,8 +3,12 @@ import { verifyToken } from "@/lib/auth/utils";
 
 
 export async function GET(req: NextRequest) {
- 
+  
+
+    console.log("VERIFY");
     const token = req.cookies.get('token')?.value;
+    console.log("REQUEST URL VẺIFY",token)
+
 
     if (!token) {
         return NextResponse.json(
@@ -32,9 +36,6 @@ export async function GET(req: NextRequest) {
           { status: 401 }
         )
       }
-    
-
-
   
      
 }

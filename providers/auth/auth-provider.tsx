@@ -4,6 +4,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { User } from '@prisma/client';
 
+
 // Define the store interface
 interface AuthStore {
   user: User | null;
@@ -43,7 +44,6 @@ const useAuthStore = create<AuthStore>()(
               isAuthenticated: true,
               loading: false 
             });
-
 
             toast.success('Login successful');
            

@@ -14,8 +14,6 @@ export async function POST(req: NextRequest) {
 
     const { name, password } = body;
 
-    console.log("NAME", name);
-    console.log("PASSWORD", password);
 
     const user = await prismadb.user.findFirst({
       where: { name },
@@ -38,14 +36,15 @@ export async function POST(req: NextRequest) {
     // Check password
     const isPasswordValid = await comparePassword(password, user.password);
 
-    console.log("USER", user);
-    console.log("PASSWORD VALID", isPasswordValid);
+
     if (!isPasswordValid) {
       return NextResponse.json(
         { message: "Wrong Password Please Check" },
         { status: 401 }
       );
     }
+
+    console.log("KHONG TIM THAY ")
 
     // Generate token
     const token = generateToken(user);
@@ -71,24 +70,9 @@ export async function POST(req: NextRequest) {
       }
     );
 
-    // (await cookies()).set("__token", token, {
-    //   httpOnly: true,
-    //   path: "/",
-    //   maxAge: 86400, // 1 day in seconds
-    //   sameSite: "strict",
-    // });
-
     return response;
 
-    // return res.status(200).json({
-    //   message: "Login successful",
-    //   user: {
-    //     id: user.id,
-    //     email: user.email,
-    //     name: user.name,
-    //     role: user.role,
-    //   },
-    // });
+
   } catch (error) {
     console.error("Login error:", error);
     // return res.status(500).json({ message: "Internal Server Error" });
