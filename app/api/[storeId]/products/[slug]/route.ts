@@ -214,6 +214,27 @@ export async function DELETE(req: Request, props: { params: Params }) {
       return new NextResponse("Forbiden", { status: 403 });
     }
 
+    await prismadb.product.update({
+      where: {
+        slug: slug,
+      },
+      data: {
+        storeId: storeId,
+        images: {
+          deleteMany: {},
+        },
+        productSizes: {
+          deleteMany: {},
+        },
+        productColors: {
+          deleteMany: {},
+        },
+        // images: {
+        //   deleteMany: {},
+        // },
+      },
+    });
+
     const product = await prismadb.product.deleteMany({
       where: {
         slug: slug,
