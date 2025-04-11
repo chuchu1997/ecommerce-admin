@@ -543,14 +543,12 @@ export const ProductForm: React.FC<ProductProps> = ({
                                 if (isChecked) {
                                   field.onChange([
                                     ...(field.value || []),
-                                    size.id,
+                                    { sizeId: size.id }, // ✅
                                   ]);
                                 } else {
                                   field.onChange(
-                                    (field.value || []).filter(
-                                      (val) => val.sizeId !== size.id
-                                    )
-                                  );
+                                    (field.value || []).filter((val) => val.sizeId !== size.id)
+                                  )
                                 }
                               }}
                             />
