@@ -22,11 +22,15 @@ export async function GET(req: Request, props: { params: Params }) {
         category: true,
         images: true,
         subcategory: true,
-        productSizes: true,
+        productSizes: {
+          include: {
+            size: true, // 🟢 Lấy thông tin từ bảng Size
+          },
+        },
         productColors: true,
       },
     });
-
+    console.log("PRODUCT LOG ", product);
     return NextResponse.json(product, { status: 200 });
   } catch (err) {
     console.log("[PRODUCT_GET_ID]", err);

@@ -52,15 +52,13 @@ const ProductPage = async (props: ProductPageProps) => {
   } else {
     colors = product.productColors.map((productColor) => productColor.color); // hoặc lấy từ product.productSizes nếu đã include
   }
-  if (!product?.productSizes || product.productSizes.length === 0) {
-    sizes = await prismadb.size.findMany({
-      where: {
-        storeId: storeId,
-      },
-    });
-  } else {
-    sizes = product.productSizes.map((productSize) => productSize.size); // Extract the size objects
-  }
+  
+
+  sizes = await prismadb.size.findMany({
+    where: {
+      storeId: storeId,
+    },
+  });
 
   return (
     <div className="flex">

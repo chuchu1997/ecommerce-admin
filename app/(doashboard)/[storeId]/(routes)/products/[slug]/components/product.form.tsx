@@ -135,11 +135,21 @@ export const ProductForm: React.FC<ProductProps> = ({
           price: parseFloat(String(initialData.price)),
           subCategoryId: initialData.subcategoryId ?? "",
           slugData: initialData.slug,
-          sizes: initialData.productSizes.map((size) => ({
-            ...size,
-            price: size.price ?? 0,
-            stockQuantity: size.stockQuantity ?? 0,
-          })),
+          sizes: sizes
+            .map((size) => {
+              const matched = initialData.productSizes.find(
+                (ps) => ps.sizeId === size.id
+              );
+
+              return matched
+                ? {
+                    sizeId: size.id,
+                    price: matched.price ?? 0,
+                    stockQuantity: matched.stockQuantity ?? 0,
+                  }
+                : undefined;
+            })
+            .filter(Boolean), // chỉ giữ những cái đã chọn
           colors: initialData.productColors.map((color) => ({
             ...color,
             price: color.price ?? 0,
@@ -533,9 +543,12 @@ export const ProductForm: React.FC<ProductProps> = ({
 
                     <div className="flex flex-col space-y-2">
                       {sizes.map((size) => {
+                        console.log("SIZES", sizes);
                         const selectedSize = field.value?.find(
                           (item) => item.sizeId === size.id
                         );
+                        const isChecked = !!selectedSize;
+
                         return (
                           <FormItem
                             key={size.id}
@@ -543,7 +556,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                             <div className="flex items-center space-x-3">
                               <FormControl>
                                 <Checkbox
-                                  checked={!!selectedSize}
+                                  checked={isChecked}
                                   onCheckedChange={(checked) => {
                                     const isChecked = checked === true;
                                     if (isChecked) {
@@ -572,7 +585,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                             </div>
                             {/* CREATE BUTTON FOR INPUT PRICE AND STOCK */}
 
-                            {selectedSize && (
+                            {isChecked && (
                               <div className="flex space-x-3 pl-6">
                                 <Input
                                   type="number"
