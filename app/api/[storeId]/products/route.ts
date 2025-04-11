@@ -34,6 +34,8 @@ export async function GET(req: Request, props: { params: Params }) {
         images: true,
         category: true,
         subcategory: true,
+        productSizes: true,
+        productColors: true,
       },
       orderBy: {
         createAt: "desc",
@@ -80,7 +82,6 @@ export async function POST(
       sizes,
       colors,
     } = body;
-
 
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });

@@ -22,6 +22,8 @@ export async function GET(req: Request, props: { params: Params }) {
         category: true,
         images: true,
         subcategory: true,
+        productSizes: true,
+        productColors: true,
       },
     });
 
