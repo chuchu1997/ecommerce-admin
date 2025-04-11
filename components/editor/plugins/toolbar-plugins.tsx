@@ -161,6 +161,7 @@ const ToolbarPlugins = () => {
         <Button
           className="h-8 px-2"
           variant={"ghost"}
+          type="button"
           disabled={!canUndo}
           onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)}>
           {/* reload flip to left */}
@@ -170,6 +171,7 @@ const ToolbarPlugins = () => {
         <Button
           className="h-8 px-2"
           variant={"ghost"}
+          type="button"
           disabled={!canRedo}
           onClick={() => editor.dispatchCommand(REDO_COMMAND, undefined)}>
           <Loader2Icon />
@@ -237,7 +239,6 @@ const ToolbarPlugins = () => {
           blockType={blockType}
           onUpdate={() => {
             editor.getEditorState().read(() => {
-              console.log("UPDATE CALL !!");
               $updateToolbar();
             });
           }}
