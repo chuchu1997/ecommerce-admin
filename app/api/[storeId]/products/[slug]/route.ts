@@ -53,6 +53,8 @@ export async function PATCH(req: Request, props: { params: Params }) {
       stockQuantity,
       viewCount,
       ratingCount,
+      sizes,
+      colors,
     } = body;
 
     const params = await props.params;
@@ -122,6 +124,12 @@ export async function PATCH(req: Request, props: { params: Params }) {
         images: {
           deleteMany: {},
         },
+        productSizes: {
+          deleteMany: {},
+        },
+        productColors: {
+          deleteMany: {},
+        },
         // images: {
         //   deleteMany: {},
         // },
@@ -131,6 +139,11 @@ export async function PATCH(req: Request, props: { params: Params }) {
     const product = await prismadb.product.update({
       where: {
         slug: slug,
+      },
+      include: {
+        productSizes: true,
+        productColors: true,
+        images: true,
       },
       data: {
         description,
@@ -154,6 +167,15 @@ export async function PATCH(req: Request, props: { params: Params }) {
         },
       },
     });
+    if (sizes && sizes.length > 0) {
+      await createProductWithSizes(product.id, sizes);
+    }
+
+    // Tạo lại màu nếu có
+    if (colors && colors.length > 0) {
+      await createProductWithColors(product.id, colors);
+    }
+
     return NextResponse.json(product);
     // return NextResponse.json(store);
   } catch (err) {
@@ -200,3 +222,52 @@ export async function DELETE(req: Request, props: { params: Params }) {
     return new NextResponse("Internal error", { status: 500 });
   }
 }
+type SizesForProduct = {
+  sizeId: string;
+  price: number;
+  stockQuantity: number;
+};
+
+type ColorsForProduct = {
+  colorId: string;
+  price: number;
+  stockQuantity: number;
+};
+const createProductWithSizes = async (
+  productID: string,
+  sizes: SizesForProduct[]
+) => {
+  await Promise.all(
+    sizes.map(async (size) => {
+      const { sizeId, price, stockQuantity } = size;
+      // Tạo mới bản ghi trong bảng productSize
+      await prismadb.productSize.create({
+        data: {
+          productId: productID,
+          sizeId,
+          price,
+          stockQuantity,
+        },
+      });
+    })
+  );
+};
+const createProductWithColors = async (
+  productID: string,
+  colors: ColorsForProduct[]
+) => {
+  await Promise.all(
+    colors.map(async (colors) => {
+      const { colorId, price, stockQuantity } = colors;
+      // Tạo mới bản ghi trong bảng productSize
+      await prismadb.productColor.create({
+        data: {
+          productId: productID,
+          colorId,
+          price,
+          stockQuantity,
+        },
+      });
+    })
+  );
+};

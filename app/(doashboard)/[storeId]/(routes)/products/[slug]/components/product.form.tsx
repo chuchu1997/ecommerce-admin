@@ -138,6 +138,7 @@ export const ProductForm: React.FC<ProductProps> = ({
           sizes: initialData.productSizes.map((size) => ({
             ...size,
             price: size.price ?? 0,
+            stockQuantity: size.stockQuantity ?? 0,
           })),
           colors: initialData.productColors.map((color) => ({
             ...color,
@@ -186,9 +187,10 @@ export const ProductForm: React.FC<ProductProps> = ({
       }
     }
   }, [form.watch("categoryId"), categories]);
-
+  useEffect(() => {
+    console.log("DATA", initialData);
+  });
   const onSubmit = async (data: ProductFormValues) => {
-    console.log("ONSUBMIT CALL !!");
     try {
       setLoading(true);
       if (initialData) {
@@ -528,39 +530,91 @@ export const ProductForm: React.FC<ProductProps> = ({
                     <FormDescription>
                       Chọn các kích thước có sẵn cho sản phẩm.
                     </FormDescription>
+
                     <div className="flex flex-col space-y-2">
-                      {sizes.map((size) => (
-                        <FormItem
-                          key={size.id}
-                          className="flex flex-row items-start space-x-3 space-y-0">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value?.some(
-                                (item) => item.sizeId === size.id
-                              )}
-                              onCheckedChange={(checked) => {
-                                const isChecked = checked === true;
-                                if (isChecked) {
-                                  field.onChange([
-                                    ...(field.value || []),
-                                    { sizeId: size.id }, // ✅
-                                  ]);
-                                } else {
-                                  field.onChange(
-                                    (field.value || []).filter((val) => val.sizeId !== size.id)
-                                  )
-                                }
-                              }}
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel className="text-sm font-normal">
-                              {size.name}
-                            </FormLabel>
-                          </div>
-                        </FormItem>
-                      ))}
+                      {sizes.map((size) => {
+                        const selectedSize = field.value?.find(
+                          (item) => item.sizeId === size.id
+                        );
+                        return (
+                          <FormItem
+                            key={size.id}
+                            className="flex flex-col space-y-1">
+                            <div className="flex items-center space-x-3">
+                              <FormControl>
+                                <Checkbox
+                                  checked={!!selectedSize}
+                                  onCheckedChange={(checked) => {
+                                    const isChecked = checked === true;
+                                    if (isChecked) {
+                                      field.onChange([
+                                        ...(field.value || []),
+                                        {
+                                          sizeId: size.id,
+                                          price: selectedSize?.price,
+                                          stockQuantity:
+                                            selectedSize?.stockQuantity,
+                                        },
+                                      ]);
+                                    } else {
+                                      field.onChange(
+                                        (field.value || []).filter(
+                                          (val) => val.sizeId !== size.id
+                                        )
+                                      );
+                                    }
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="text-sm font-normal">
+                                {size.name}
+                              </FormLabel>
+                            </div>
+                            {/* CREATE BUTTON FOR INPUT PRICE AND STOCK */}
+
+                            {selectedSize && (
+                              <div className="flex space-x-3 pl-6">
+                                <Input
+                                  type="number"
+                                  placeholder="Giá"
+                                  className="w-28"
+                                  value={selectedSize.price ?? ""}
+                                  onChange={(e) => {
+                                    const newValue = e.target.value;
+                                    field.onChange(
+                                      (field.value || []).map((val) =>
+                                        val.sizeId === size.id
+                                          ? { ...val, price: newValue }
+                                          : val
+                                      )
+                                    );
+                                  }}
+                                />
+                                <Input
+                                  type="number"
+                                  placeholder="Tồn kho"
+                                  className="w-28"
+                                  value={selectedSize.stockQuantity ?? ""}
+                                  onChange={(e) => {
+                                    const newValue = e.target.value;
+                                    field.onChange(
+                                      (field.value || []).map((val) =>
+                                        val.sizeId === size.id
+                                          ? { ...val, stockQuantity: newValue }
+                                          : val
+                                      )
+                                    );
+                                  }}
+                                />
+                              </div>
+                            )}
+
+                            {/* CREATE BUTTON FOR INPUT PRICE AND STOCK */}
+                          </FormItem>
+                        );
+                      })}
                     </div>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
