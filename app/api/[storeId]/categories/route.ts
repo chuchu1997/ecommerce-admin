@@ -32,6 +32,9 @@ export async function GET(
           },
         },
       },
+      orderBy: {
+        createAt: "asc",
+      },
     });
 
     return NextResponse.json(categories, { status: 200 });
