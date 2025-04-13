@@ -27,11 +27,13 @@ const ProductPage = async (props: ProductPageProps) => {
       storeId: storeId,
     },
     include: {
+      category: true,
       productSizes: {
         include: {
           size: true, // Include the size details
         },
       },
+
       productColors: {
         include: {
           color: true, // Include the color details
@@ -52,7 +54,6 @@ const ProductPage = async (props: ProductPageProps) => {
   } else {
     colors = product.productColors.map((productColor) => productColor.color); // hoặc lấy từ product.productSizes nếu đã include
   }
-  
 
   sizes = await prismadb.size.findMany({
     where: {
