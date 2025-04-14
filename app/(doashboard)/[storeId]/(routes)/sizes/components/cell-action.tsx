@@ -47,6 +47,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         onClose={() => setOpen(false)}
         onConfirm={() => {
           onDelete();
+          setOpen(false);
         }}
       />
 

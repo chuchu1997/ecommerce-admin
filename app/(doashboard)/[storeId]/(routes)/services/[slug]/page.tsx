@@ -11,16 +11,7 @@ const ServicePage = async (props: ProductPageProps) => {
   const { params } = props;
   const { slug, storeId } = await params;
 
-  console.log("SLUG", slug);
 
-  const categories = await prismadb.category.findMany({
-    where: {
-      storeId: storeId,
-    },
-    include: {
-      subcategories: true,
-    },
-  });
 
   const service = await prismadb.service.findUnique({
     where: {
@@ -28,14 +19,23 @@ const ServicePage = async (props: ProductPageProps) => {
       storeId: storeId,
     },
     include: {
+      category: true,
+      subcategory:true,
       images: true, // Include related image if required by ProductForm
     },
   });
+  const defaultCategory = await prismadb.category.findFirst({
+    where: {
+      storeId,
+      slug: "dich-vu",
+    },
+  });
+
 
   return (
     <div className="flex">
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <ServiceForm initialData={service} categories={categories} />
+        <ServiceForm initialData={service} defaultCategoryId={defaultCategory?.id} />
       </div>
     </div>
   );

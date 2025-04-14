@@ -2,6 +2,8 @@ import prismadb from "@/lib/primadb";
 import { ProductClient } from "./components/client";
 import { format } from "date-fns";
 import { ProductColumn } from "./components/column";
+import { redirect } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface CategoriesPageProps {
   params: Promise<{ storeId: string }>;
@@ -25,9 +27,7 @@ const ProductPage = async (props: CategoriesPageProps) => {
       createAt: "desc",
     },
   });
-
   const formatProductsColumn: ProductColumn[] = products.map((item) => ({
-
     id: item.id,
     subCategory: item.subcategory?.name ?? '',
     imageUrl: item.images[0]?.url ?? '',
@@ -42,6 +42,19 @@ const ProductPage = async (props: CategoriesPageProps) => {
     stock:item.stockQuantity
     
   }));
+
+    const defaultCategory = await prismadb.category.findFirst({
+      where: {
+        storeId,
+        slug: "san-pham",
+      },
+    });
+    
+    if (!defaultCategory) {
+      toast("Chưa có danh mục sản phẩm vui lòng tạo ")
+      redirect(`/${storeId}/categories/new`);
+    }
+
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">

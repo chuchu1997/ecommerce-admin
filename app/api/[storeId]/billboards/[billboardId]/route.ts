@@ -9,11 +9,7 @@ type Params = Promise<{
   billboardId: string;
 }>;
 
-export async function GET(
-  req: Request,
-
-  props: { params: Params }
-) {
+export async function GET(req: Request, props: { params: Params }) {
   try {
     const params = await props.params;
     const { billboardId } = params;
@@ -43,7 +39,7 @@ export async function PATCH(
   try {
     const user = await getCurrentUser();
     const body = await req.json();
-    const { label, imageUrl, isActiveBanner } = body;
+    const { label, imageUrl, isActiveBanner, linkHref } = body;
     const params = await props.params;
 
     const { storeId, billboardId } = params;
@@ -81,6 +77,7 @@ export async function PATCH(
         label: label,
         imageUrl: imageUrl,
         isActiveBanner: isActiveBanner,
+        linkHref,
       },
     });
     return NextResponse.json(billboard);

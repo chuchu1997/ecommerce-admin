@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AvatarButton from "./avatar-button";
 import { Separator } from "./ui/separator";
 
@@ -14,10 +14,15 @@ export function MainNav({ className }: React.HtmlHTMLAttributes<HTMLElement>) {
   const pathname = usePathname();
   const params = useParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
   const routes = [
     {
       href: `/${params.storeId}`,
@@ -62,6 +67,7 @@ export function MainNav({ className }: React.HtmlHTMLAttributes<HTMLElement>) {
       active: pathname === `/${params.storeId}/settings`,
     },
   ];
+  if (!isMounted) return null;
 
   return (
     <div className="relative ">

@@ -53,18 +53,24 @@ const formSchema = z.object({
 interface ServicesProps {
   initialData:
     | (Service & {
+        category: Category;
+
         images: Image[];
       })
     | null;
-  categories: Category[];
+  defaultCategoryId?: string;
 }
 
 type ProductFormValues = z.infer<typeof formSchema>;
 
 export const ServiceForm: React.FC<ServicesProps> = ({
   initialData,
-  categories,
+  defaultCategoryId,
 }) => {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const params = useParams();
   const router = useRouter();
 
@@ -92,31 +98,10 @@ export const ServiceForm: React.FC<ServicesProps> = ({
           images: [],
           description: "",
           subCategoryId: "",
-          categoryId: "",
+          categoryId: defaultCategoryId ?? "",
           slugData: "",
         },
   });
-
-  const [subcategories, setSubcategories] = useState<
-    { id: string; name: string }[]
-  >(
-    initialData?.categoryId
-      ? categories.find((category) => category.id === initialData.categoryId)
-          ?.subcategories || []
-      : []
-  );
-
-  useEffect(() => {
-    const selectedCategory = categories.find(
-      (category) => category.id === form.watch("categoryId")
-    );
-    if (selectedCategory) {
-      setSubcategories(selectedCategory?.subcategories || []);
-      if (selectedCategory?.subcategories?.length === 0) {
-        form.setValue("subCategoryId", "");
-      }
-    }
-  }, [form.watch("categoryId"), categories]);
 
   const onSubmit = async (data: ProductFormValues) => {
     try {
@@ -157,6 +142,7 @@ export const ServiceForm: React.FC<ServicesProps> = ({
       setLoading(false);
     }
   };
+  if (!isMounted) return null;
   return (
     <div className="flex flex-col gap-4">
       <AlertModal
@@ -191,6 +177,45 @@ export const ServiceForm: React.FC<ServicesProps> = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className=" w-full md:w-1/2 mx-auto">
           <div className="grid grid-cols-1 gap-8 mt-[15px] ">
+            {initialData?.category?.subcategories &&
+              initialData.category.subcategories.length > 0 && (
+                <FormField
+                  control={form.control}
+                  name="subCategoryId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Danh mục con</FormLabel>
+                      <div className="relative">
+                        <Select
+                          disabled={loading}
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Chọn danh mục con" />
+                            </SelectTrigger>
+                          </FormControl>
+
+                          <SelectContent position="popper">
+                            {initialData?.category?.subcategories?.map(
+                              (subcategory) => (
+                                <SelectItem
+                                  key={subcategory.id}
+                                  value={subcategory.id}>
+                                  {subcategory.name}
+                                </SelectItem>
+                              )
+                            )}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
             <FormField
               control={form.control}
               name="images"
@@ -300,75 +325,6 @@ export const ServiceForm: React.FC<ServicesProps> = ({
                         {...field}
                         placeholder="Lưu ý (Nếu dịch vụ có giá cụ thể thì nhập , không thì để trống !!!!)  "></Input>
                     </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="categoryId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Danh mục </FormLabel>
-                    <Select
-                      disabled={loading}
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue
-                            defaultValue={field.value}
-                            placeholder="Chọn Danh mục  "
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="subCategoryId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Danh mục con </FormLabel>
-                    <Select
-                      disabled={
-                        categories.find(
-                          (category) => category.id === form.watch("categoryId")
-                        )?.subcategories?.length === 0
-                      } // Disable nếu không có subcategories
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue
-                            defaultValue={field.value}
-                            placeholder="Chọn danh mục con "
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-
-                      <SelectContent>
-                        {subcategories.map((subcategory) => (
-                          <SelectItem
-                            key={subcategory.id}
-                            value={subcategory.id}>
-                            {subcategory.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                   </FormItem>
                 )}
               />
