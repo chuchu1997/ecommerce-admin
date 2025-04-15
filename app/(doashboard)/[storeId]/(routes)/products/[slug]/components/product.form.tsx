@@ -93,6 +93,7 @@ const formSchema = z.object({
 interface ProductProps {
   initialData:
     | (Product & {
+        category: Category;
         images: Image[];
         productSizes: (ProductSize & {
           size: Size;
@@ -102,7 +103,8 @@ interface ProductProps {
         })[];
       })
     | null;
-  categories: Category[];
+  defaultCategoryId?: string; //
+
   sizes: Size[];
   colors: Color[];
 }
@@ -111,10 +113,15 @@ type ProductFormValues = z.infer<typeof formSchema>;
 
 export const ProductForm: React.FC<ProductProps> = ({
   initialData,
-  categories,
+  defaultCategoryId,
   sizes,
   colors,
 }) => {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const params = useParams();
   const router = useRouter();
   const title = initialData ? "Chỉnh sửa sản phẩm" : "Tạo sản phẩm ";
@@ -159,7 +166,8 @@ export const ProductForm: React.FC<ProductProps> = ({
           sizes: [],
           colors: [],
           name: "",
-          categoryId: "",
+          categoryId: defaultCategoryId ?? "",
+
           price: 0,
           images: [],
           subCategoryId: "",
@@ -175,34 +183,10 @@ export const ProductForm: React.FC<ProductProps> = ({
         },
   });
 
-  //HANDLE FOR SUBCATEGORIES
-
-  const [subcategories, setSubcategories] = useState<
-    { id: string; name: string }[]
-  >(
-    initialData?.categoryId
-      ? categories.find((category) => category.id === initialData.categoryId)
-          ?.subcategories || []
-      : []
-  );
-
-  useEffect(() => {
-    const selectedCategory = categories.find(
-      (category) => category.id === form.watch("categoryId")
-    );
-    if (selectedCategory) {
-      setSubcategories(selectedCategory?.subcategories || []);
-      if (selectedCategory?.subcategories?.length === 0) {
-        form.setValue("subCategoryId", "");
-      }
-    }
-  }, [form.watch("categoryId"), categories]);
-  useEffect(() => {
-    console.log("DATA", initialData);
-  });
   const onSubmit = async (data: ProductFormValues) => {
     try {
       setLoading(true);
+
       if (initialData) {
         await axios.patch(
           `/api/${params.storeId}/products/${params.slug}`,
@@ -238,6 +222,9 @@ export const ProductForm: React.FC<ProductProps> = ({
       setLoading(false);
     }
   };
+
+  if (!isMounted) return null;
+
   return (
     <div className="flex flex-col gap-4">
       <AlertModal
@@ -245,8 +232,8 @@ export const ProductForm: React.FC<ProductProps> = ({
         onClose={() => setOpen(false)}
         loading={loading}
         onConfirm={async () => {
-          await onDelete();
           setOpen(false);
+          await onDelete();
         }}
       />
       <div className="flex items-center justify-between my-4">
@@ -272,34 +259,45 @@ export const ProductForm: React.FC<ProductProps> = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full md:w-1/2 mx-auto">
           <div className="grid grid-cols-1 gap-8 mt-[15px]">
-            <FormField
-              control={form.control}
-              name="categoryId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Danh mục </FormLabel>
-                  <Select
-                    disabled={loading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a main category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent position="popper">
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
+            {initialData?.category?.subcategories &&
+              initialData.category.subcategories.length > 0 && (
+                <FormField
+                  control={form.control}
+                  name="subCategoryId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Danh mục con</FormLabel>
+                      <div className="relative">
+                        <Select
+                          disabled={loading}
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Chọn danh mục con" />
+                            </SelectTrigger>
+                          </FormControl>
+
+                          <SelectContent position="popper">
+                            {initialData?.category?.subcategories?.map(
+                              (subcategory) => (
+                                <SelectItem
+                                  key={subcategory.id}
+                                  value={subcategory.id}>
+                                  {subcategory.name}
+                                </SelectItem>
+                              )
+                            )}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               )}
-            />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="subCategoryId"
               render={({ field }) => (
@@ -337,7 +335,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                   </div>
                 </FormItem>
               )}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="images"

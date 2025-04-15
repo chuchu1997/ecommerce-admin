@@ -37,12 +37,14 @@ const formSchema = z.object({
   label: z.string().min(1),
   imageUrl: z.string().min(1),
   isActiveBanner: z.boolean(),
+  linkHref: z.string().optional(),
 });
 
 type BillboardsFormValues = z.infer<typeof formSchema>;
 
 export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
   const params = useParams();
+
   const router = useRouter();
 
   const [isReady, setIsReady] = useState(false);
@@ -65,11 +67,13 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
   const [loading, setLoading] = useState(false);
   const form = useForm<BillboardsFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
-      isActiveBanner: false,
-      label: "",
-      imageUrl: "",
-    },
+    defaultValues: initialData
+      ? { ...initialData, linkHref: initialData.linkHref ?? "" }
+      : {
+          isActiveBanner: false,
+          label: "",
+          imageUrl: "",
+        },
   });
 
   const onSubmit = async (data: BillboardsFormValues) => {
@@ -148,6 +152,10 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Chọn Hình Ảnh </FormLabel>
+                <FormDescription className="text-muted-foreground text-sm">
+                  (Nếu là banner, hãy chọn hình ảnh có kích thước{" "}
+                  <strong>1920x880</strong> để tối ưu nhất)
+                </FormDescription>
                 <FormControl>
                   <ImageUpload
                     disabled={loading}
@@ -170,6 +178,22 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
                       disabled={loading}
                       {...field}
                       placeholder="Tên hình   "></Input>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="linkHref"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Đường dẫn hình ảnh </FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      {...field}
+                      placeholder="Nếu hình ảnh có đường dẫn thì hãy nhập   "></Input>
                   </FormControl>
                 </FormItem>
               )}

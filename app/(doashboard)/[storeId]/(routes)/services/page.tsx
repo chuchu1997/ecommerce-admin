@@ -2,6 +2,8 @@ import prismadb from "@/lib/primadb";
 import { ServiceClient } from "./components/client";
 import { format } from "date-fns";
 import { ServiceColumn } from "./components/column";
+import toast from "react-hot-toast";
+import { redirect } from "next/navigation";
 
 interface ServicesPageProps {
   params: Promise<{ storeId: string }>;
@@ -36,7 +38,16 @@ const ServicePage = async (props: ServicesPageProps) => {
     category: item.category.name,
     subCategory: item.subcategory?.name ?? "",
   }));
-
+  const defaultCategory = await prismadb.category.findFirst({
+    where: {
+      storeId,
+      slug: "dich-vu",
+    },
+  })
+  if (!defaultCategory) {
+    toast("Chưa có danh mục dịch vụ vui lòng tạo ")
+    redirect(`/${storeId}/categories/new`);
+  }
   return (
     <div className="flex flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
