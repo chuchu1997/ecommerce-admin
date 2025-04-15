@@ -29,11 +29,9 @@ export async function PATCH(req: Request, props: { params: Params }) {
   try {
     const user = await getCurrentUser();
     const body = await req.json();
-
-    const { title, imageUrl, content, slugData } = body;
-
     const params = await props.params;
     const { storeId, slug } = params;
+    const { title, imageUrl, content, slugData } = body;
 
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -78,6 +76,7 @@ export async function PATCH(req: Request, props: { params: Params }) {
         slug: slugData,
       },
     });
+    console.log("NEWS", news);
 
     return NextResponse.json(news);
     // return NextResponse.json(store);

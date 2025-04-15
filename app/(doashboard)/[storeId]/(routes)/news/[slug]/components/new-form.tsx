@@ -66,6 +66,7 @@ export const NewsForm: React.FC<NewsProps> = ({ initialData }) => {
       ? {
           ...initialData,
           imageUrl: initialData.imageUrl || "",
+          slugData: initialData.slug,
         }
       : {
           title: "",
@@ -76,6 +77,7 @@ export const NewsForm: React.FC<NewsProps> = ({ initialData }) => {
   });
 
   const onSubmit = async (data: NewsFormValues) => {
+    console.log("data", data);
     try {
       setLoading(true);
       if (initialData) {

@@ -41,7 +41,7 @@ export async function POST(req: Request, props: { params: Params }) {
 
     const body = await req.json();
 
-    const { label, imageUrl, linkHref } = body;
+    const { label, imageUrl, linkHref, isActiveBanner } = body;
 
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -73,6 +73,7 @@ export async function POST(req: Request, props: { params: Params }) {
         imageUrl,
         storeId: storeId,
         linkHref,
+        isActiveBanner,
       },
     });
 
