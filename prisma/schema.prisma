@@ -17,6 +17,22 @@ datasource db {
 
 
 
+model News { 
+   id String @id @default(uuid())
+   title String 
+   slug String @unique 
+   content   String   @db.Text
+   imageUrl     String?  // URL ảnh đại diện của bài viết
+   storeId   String?  // Tin có thể không thuộc store nào (optional)
+   createdAt DateTime @default(now())
+   updatedAt DateTime @updatedAt
+  // Quan hệ
+   store Store? @relation("StoreToNews",fields: [storeId],references: [id])
+
+   @@index([storeId])
+}
+
+
 
 model User {
   id        String     @id @default(uuid())
@@ -41,7 +57,7 @@ model Store {
   colors Color[] @relation("StoreToColor")
   subCategories Subcategory[] @relation("StoreToSubCategory")
   Service Service[] @relation("StoreToService")
-
+  news News[] @relation("StoreToNews")
 
 }
 
