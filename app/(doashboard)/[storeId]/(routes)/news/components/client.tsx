@@ -34,10 +34,10 @@ export const NewsClient = (props: NewsClientProps) => {
         </Button>
       </div>
       <Separator />
-      <DataTable searchKey="title" columns={columns} data={data}></DataTable>
+      <DataTable searchKey="name" columns={columns} data={data}></DataTable>
       <Heading title={"API"} description={"API Call for products"} />
       <Separator />
-      <ApiList entityName="products" entityIdName="slug" />
+      <ApiList entityName="news" entityIdName="slug" />
     </>
   );
 };

@@ -18,7 +18,7 @@ const NewsPage = async (props: NewsPageProps) => {
       storeId:storeId
     }
   })
-  
+  console.log("NMEWS",news);
 
   const formatNewsColumn :NewsColumn[] = news.map((item)=>({
     id: item.id,

@@ -10,6 +10,7 @@ import {
   ScalingIcon,
   SettingsIcon,
   ChevronDownIcon,
+  NewspaperIcon,
 } from "lucide-react"
 
 import {
@@ -46,6 +47,12 @@ export function AppSidebar() {
         label: "Tổng quan",
         icon: ChartSplineIcon,
         active: pathname === `/${params.storeId}`,
+      },
+      {
+        href: `/${params.storeId}/news`,
+        label: "Bài viết ",
+        icon: NewspaperIcon,
+        active: pathname === `/${params.storeId}/news`,
       },
     ],
     products: [

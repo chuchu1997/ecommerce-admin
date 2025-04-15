@@ -18,6 +18,7 @@ const NewPage = async (props: NewPageProps) => {
       storeId: storeId,
     },
   });
+  
 
  
   return (

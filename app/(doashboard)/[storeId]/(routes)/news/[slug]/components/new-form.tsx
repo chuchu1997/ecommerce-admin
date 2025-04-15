@@ -57,7 +57,9 @@ export const NewsForm: React.FC<NewsProps> = ({ initialData }) => {
   const [showEditor, setShowEditor] = useState(false);
 
   const [isMounted, setIsMounted] = useState(false);
-
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const form = useForm<NewsFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData
@@ -156,7 +158,7 @@ export const NewsForm: React.FC<NewsProps> = ({ initialData }) => {
               </FormItem>
             )}
           />
-          <div className="grid grid-cols-3 gap-8 mt-[15px]">
+          <div className="grid grid-cols-2 gap-8 mt-[15px]">
             <FormField
               control={form.control}
               name="title"

@@ -91,6 +91,7 @@ export async function POST(
     }
     const news = await prismadb.news.create({
       data: {
+        storeId,
         title,
         imageUrl,
         content,
