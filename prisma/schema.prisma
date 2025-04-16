@@ -183,6 +183,7 @@ model Order{
     id String @id @default(uuid())
     storeId String
     store Store @relation("StoreToOrder",fields: [storeId],references: [id])
+    customerID String /// ID CUA NGUOI DAT HANG CO THE LUU THEO IP CUA MAY HO.
     paymentMethod String @default("cod") //PHUONG THUC THANH TOAN 
     orderItems OrderItem[]
     isPaid Boolean @default(false) /// ĐÃ THANH TOÁN HAY CHƯA 
