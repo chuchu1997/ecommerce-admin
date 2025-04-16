@@ -5,7 +5,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import mime from "mime-types";
 
-import { S3Client, ListBucketsCommand } from "@aws-sdk/client-s3";
+import { S3Client, ListBucketsCommand ,PutObjectCommand} from "@aws-sdk/client-s3";
 
 const s3 = new S3Client({ region: 'us-west-2' }); // Thay 'us-west-2' bằng region của bạn
 
@@ -15,7 +15,7 @@ const uploadParams = {
   Body: 'file-content', // Nội dung file (hoặc có thể là Buffer, ReadStream...)
 };
 
-const uploadImageS3Amazon = async  (fileBuffer, originalName)=>{
+const uploadImageS3Amazon = async  (fileBuffer:Buffer, originalName:string)=>{
     const fileExtension = mime.extension(mime.lookup(originalName) || "application/octet-stream");
     const fileKey = `${uuidv4()}.${fileExtension}`;
   
