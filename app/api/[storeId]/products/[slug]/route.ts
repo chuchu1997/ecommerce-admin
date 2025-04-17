@@ -30,7 +30,7 @@ export async function GET(req: Request, props: { params: Params }) {
         productColors: true,
       },
     });
-    console.log("PRODUCT LOG ", product);
+
     return NextResponse.json(product, { status: 200 });
   } catch (err) {
     console.log("[PRODUCT_GET_ID]", err);
