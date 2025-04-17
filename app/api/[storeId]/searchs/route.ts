@@ -24,7 +24,6 @@ export async function GET(
       if (!query) {
         return NextResponse.json({ message: "Query parameter is required" }, { status: 400 });
       }
-    
 
       const products = await prismadb.product.findMany({
         where: {

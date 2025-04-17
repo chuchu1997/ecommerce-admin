@@ -190,9 +190,11 @@ model Order{
     phone String @default("")
     username String 
     address String 
+    orderStatus    OrderStatus  @default(pending) /// TRẠNG THÁI ĐƠN HÀNG
     note String @default("")
-   createAt DateTime @default(now())
-   updateAt DateTime @updatedAt
+    totalPrice Float
+    createAt DateTime @default(now())
+    updateAt DateTime @updatedAt
 
    @@index([storeId])
 }
@@ -292,7 +294,13 @@ model Billboard{
   updateAt DateTime @updatedAt
   @@index([storeId])
 }
-
+enum OrderStatus {
+  pending     // Đang chờ xử lý
+  confirmed   // Đã xác nhận
+  shipped     // Đã gửi hàng
+  delivered   // Đã giao hàng
+  cancelled   // Đã huỷ
+}
 
  enum Role {
   USER

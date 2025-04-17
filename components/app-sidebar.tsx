@@ -54,6 +54,12 @@ export function AppSidebar() {
         icon: NewspaperIcon,
         active: pathname === `/${params.storeId}/news`,
       },
+      {
+        href: `/${params.storeId}/orders`,
+        label: "Quản lý đơn hàng ",
+        icon: PackageSearchIcon,
+        active: pathname === `/${params.storeId}/orders`,
+      },
     ],
     products: [
       

@@ -4,7 +4,7 @@ export interface OrderItemInput {
   }
   
  export interface CreateOrderInput {
-    storeId: string;
+    customerID:string;
     isPaid: boolean;
     phone: string;
     username: string;
@@ -12,6 +12,8 @@ export interface OrderItemInput {
     note?: string;
     paymentMethod?: string;
     orderItems: OrderItemInput[];
+    totalPrice:number;
+
   }
 
 

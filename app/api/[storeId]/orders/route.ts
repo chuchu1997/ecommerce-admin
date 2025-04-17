@@ -9,8 +9,6 @@ type Params = Promise<{ storeId: string }>;
 
 export async function GET(req: Request, props: { params: Params }) {
   try {
-    const user = await getCurrentUser();
-
     const params = await props.params;
     const { storeId } = params;
 
@@ -18,16 +16,29 @@ export async function GET(req: Request, props: { params: Params }) {
 
     const limit = parseInt(searchParams.get("limit") || "4"); // Mặc định 4 sản phẩm mỗi lần
     const currentPage = parseInt(searchParams.get("currentPage") || "1"); // Trang mặc định là 1
+    const customerID = searchParams.get("customerId");
+    // const customerID = searchParams.get("customerId");
 
-    if (!storeId || !user) {
+    if (!storeId) {
       return new NextResponse("Chỉ có admin mới có quyền truy cập  ", {
         status: 400,
       });
     }
-
     const orders = await prismadb.order.findMany({
       where: {
         storeId: storeId,
+        customerID: customerID ?? "",
+      },
+      include: {
+        orderItems: {
+          include: {
+            product: {
+              include: {
+                images: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
         createAt: "desc",
@@ -53,8 +64,8 @@ export async function POST(
     const { storeId } = params;
 
     const body = await req.json();
-    const { title, imageUrl, content, slugData } = body;
     const {
+      customerID,
       isPaid,
       phone,
       username,
@@ -62,6 +73,7 @@ export async function POST(
       note,
       paymentMethod,
       orderItems,
+      totalPrice,
     }: CreateOrderInput = body;
     if (!storeId || !username || !address || !phone || !orderItems?.length) {
       return new NextResponse("Thiếu thông tin đơn hàng.", { status: 400 });
@@ -75,8 +87,10 @@ export async function POST(
     if (!storeByUserId) {
       return new NextResponse("Forbiden ", { status: 403 });
     }
+
     const order = await prismadb.order.create({
       data: {
+        totalPrice: totalPrice,
         storeId,
         isPaid,
         phone,
@@ -84,6 +98,7 @@ export async function POST(
         address,
         note,
         paymentMethod,
+        customerID: customerID, // Assuming `user` contains the current user's ID
         orderItems: {
           create: orderItems.map((item) => ({
             product: {
@@ -96,6 +111,21 @@ export async function POST(
         },
       },
     });
+    ///CAP NHAT LAI SO LUONG CUA SAN PHAM KHI DAT HANG THANH CONG !!!!
+    if (order) {
+      for (const item of orderItems) {
+        await prismadb.product.update({
+          where: {
+            id: item.productId,
+          },
+          data: {
+            stockQuantity: {
+              decrement: item.quantity,
+            },
+          },
+        });
+      }
+    }
 
     return NextResponse.json(order, { status: 200 });
   } catch (err) {
