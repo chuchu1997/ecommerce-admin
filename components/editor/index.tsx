@@ -65,6 +65,8 @@ const EditorComponent: React.FC<EditorInterface> = ({ value, onChange }) => {
     theme: {
       text: {
         underline: "underline",
+        italic: "italic",
+        bold: "font-bold",
       },
       heading: {
         h1: "text-3xl font-bold",
