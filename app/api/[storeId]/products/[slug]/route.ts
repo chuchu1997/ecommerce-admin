@@ -1,5 +1,6 @@
 /** @format */
 
+import { deleteFromS3 } from "@/app/services/s3-amazon";
 import { getCurrentUser } from "@/lib/auth/utils";
 import prismadb from "@/lib/primadb";
 import { NextResponse } from "next/server";
@@ -106,6 +107,18 @@ export async function PATCH(req: Request, props: { params: Params }) {
       return new NextResponse("Forbinden", { status: 403 });
     }
 
+    const productOld = await prisma?.product.findUnique({
+      where: {
+        slug: slug,
+      },
+      include: {
+        images: true,
+      },
+    });
+    productOld?.images.forEach(async (image) => {
+      //XOA IMAGE S3
+      await deleteFromS3(image.url);
+    });
     await prismadb.product.update({
       where: {
         slug: slug,
@@ -213,7 +226,18 @@ export async function DELETE(req: Request, props: { params: Params }) {
     if (!storeByUserId) {
       return new NextResponse("Forbiden", { status: 403 });
     }
-
+    const productOld = await prismadb.product.findUnique({
+      where: {
+        slug: slug,
+      },
+      include: {
+        images: true,
+      },
+    });
+    productOld?.images.forEach(async (image) => {
+      //XOA IMAGE S3
+      await deleteFromS3(image.url);
+    });
     await prismadb.product.update({
       where: {
         slug: slug,

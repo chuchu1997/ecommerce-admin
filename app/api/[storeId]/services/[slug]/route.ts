@@ -1,5 +1,6 @@
 /** @format */
 
+import { deleteFromS3 } from "@/app/services/s3-amazon";
 import { getCurrentUser } from "@/lib/auth/utils";
 import prismadb from "@/lib/primadb";
 import { NextResponse } from "next/server";
@@ -84,6 +85,19 @@ export async function PATCH(req: Request, props: { params: Params }) {
       return new NextResponse("Forbinden", { status: 403 });
     }
 
+    const serviceOld = await prismadb.service.findUnique({
+      where: {
+        slug: slug,
+      },
+      include: {
+        images: true,
+      },
+    });
+    serviceOld?.images.forEach(async (image) => {
+      //XOA IMAGE S3
+      await deleteFromS3(image.url);
+    });
+
     await prismadb.service.update({
       where: {
         slug: slug,
@@ -160,6 +174,19 @@ export async function DELETE(req: Request, props: { params: Params }) {
     if (!storeByUserId) {
       return new NextResponse("Forbiden", { status: 403 });
     }
+
+    const serviceOld = await prismadb.service.findUnique({
+      where: {
+        slug: slug,
+      },
+      include: {
+        images: true,
+      },
+    });
+    serviceOld?.images.forEach(async (image) => {
+      //XOA IMAGE S3
+      await deleteFromS3(image.url);
+    });
 
     const service = await prismadb.service.deleteMany({
       where: {

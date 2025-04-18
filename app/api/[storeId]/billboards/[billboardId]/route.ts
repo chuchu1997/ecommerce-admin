@@ -1,5 +1,6 @@
 /** @format */
 
+import { deleteFromS3 } from "@/app/services/s3-amazon";
 import { getCurrentUser } from "@/lib/auth/utils";
 import prismadb from "@/lib/primadb";
 import { NextResponse } from "next/server";
@@ -67,8 +68,21 @@ export async function PATCH(
     if (!storeByUserId) {
       return new NextResponse("Forbiden", { status: 403 });
     }
+    // await deleteFromS3(imageUrl);
 
-    const billboard = await prismadb.billboard.updateMany({
+    const billboardOld = await prismadb.billboard.findUnique({
+      where: {
+        id: billboardId,
+        storeId: storeId,
+      },
+    });
+
+    if (billboardOld?.imageUrl !== imageUrl) {
+      await deleteFromS3(billboardOld!.imageUrl);
+      //REMOVE IMAGE IN S3
+    }
+
+    const billboardUpdate = await prismadb.billboard.updateMany({
       where: {
         id: billboardId,
         storeId: storeId,
@@ -80,7 +94,7 @@ export async function PATCH(
         linkHref,
       },
     });
-    return NextResponse.json(billboard);
+    return NextResponse.json(billboardUpdate);
     // return NextResponse.json(store);
   } catch (err) {
     console.log("[STORE_PATCH]", err);
@@ -112,6 +126,16 @@ export async function DELETE(req: Request, props: { params: Params }) {
     if (!storeByUserId) {
       return new NextResponse("Forbiden", { status: 403 });
     }
+
+    const billboardOld = await prismadb.billboard.findUnique({
+      where: {
+        id: billboardId,
+        storeId: storeId,
+      },
+    });
+
+    await deleteFromS3(billboardOld!.imageUrl);
+    //REMOVE IMAGE IN S3
 
     const billboard = await prismadb.billboard.deleteMany({
       where: {
