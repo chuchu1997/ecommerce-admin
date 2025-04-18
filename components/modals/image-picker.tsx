@@ -3,6 +3,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useRef, useState } from "react";
+import axios from "axios";
 
 export default function ImagePickerDialog({
   open,
@@ -19,15 +20,20 @@ export default function ImagePickerDialog({
 
   const uploadImageToCloudinary = async (file: File) => {
     const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "nguyencuong");
-      console.log("CALL UPLOAD IMAGE TO CLOUDINARY ");
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
-      method: "POST",
-      body: formData,
+    formData.append("files", file);
+    // const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+    //   method: "POST",
+    //   body: formData,
+    // });
+
+    const res = await axios.post("/api/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
 
-    return res.json();
+    return res.data.imageUrl[0];
+
 
 
     
@@ -40,13 +46,9 @@ export default function ImagePickerDialog({
 
      let data =  await uploadImageToCloudinary(file)
      if(data){
-      const imageUrl = data.secure_url;
-              setPreviewUrl(imageUrl);
-
+      setPreviewUrl(data);
       /////TODO:
      }
-
-
       // const reader = new FileReader();
       // reader.onload = () => {
       //   setPreviewUrl(reader.result as string);

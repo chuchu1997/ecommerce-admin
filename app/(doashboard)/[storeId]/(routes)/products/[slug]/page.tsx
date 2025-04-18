@@ -11,12 +11,10 @@ interface ProductPageProps {
 const ProductPage = async (props: ProductPageProps) => {
   const { params } = props;
   const { slug, storeId } = await params;
-
  
-
   const product = await prismadb.product.findUnique({
     where: {
-      slug: slug,
+      slug: decodeURIComponent(slug),
       storeId: storeId,
     },
     include: {
@@ -67,7 +65,6 @@ const ProductPage = async (props: ProductPageProps) => {
       slug: "san-pham",
     },
   });
-
   return (
     <div className="flex">
       <div className="flex-1 space-y-4 p-8 pt-6">
@@ -76,7 +73,6 @@ const ProductPage = async (props: ProductPageProps) => {
           sizes={sizes}
           colors={colors}
           defaultCategoryId={defaultCategory?.id}
-
         />
       </div>
     </div>

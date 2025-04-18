@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
 
   images: {
-    domains: ["res.cloudinary.com"],
+    domains: ["res.cloudinary.com","mekship-develop.s3.ap-southeast-1.amazonaws.com"],
   },
   eslint: {
     ignoreDuringBuilds: true,

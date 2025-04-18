@@ -229,6 +229,9 @@ export async function DELETE(req: Request, props: { params: Params }) {
         productColors: {
           deleteMany: {},
         },
+        orderItems: {
+          deleteMany: {},
+        },
         // images: {
         //   deleteMany: {},
         // },
