@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
 
   // Set CORS headers
   const res = NextResponse.next();
-  res.headers.set('Access-Control-Allow-Origin', 'https://happyfurniture.logtech.vn');
+  res.headers.set('Access-Control-Allow-Origin', '*');
   res.headers.set('Access-Control-Allow-Credentials', 'true');
   res.headers.set('Access-Control-Allow-Methods', 'GET,DELETE,PATCH,POST,PUT');
   res.headers.set(
