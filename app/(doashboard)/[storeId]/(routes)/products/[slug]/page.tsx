@@ -64,12 +64,7 @@ const ProductPage = async (props: ProductPageProps) => {
       storeId,
       slug: "san-pham",
     },
-    include:{
-      subcategories:true
-    }
   });
- 
-
   return (
     <div className="flex">
       <div className="flex-1 space-y-4 p-8 pt-6">
@@ -77,7 +72,7 @@ const ProductPage = async (props: ProductPageProps) => {
           initialData={product}
           sizes={sizes}
           colors={colors}
-          defaultCategory={defaultCategory || undefined}
+          defaultCategoryId={defaultCategory?.id}
         />
       </div>
     </div>
