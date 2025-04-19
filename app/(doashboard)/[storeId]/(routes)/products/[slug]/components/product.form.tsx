@@ -7,18 +7,20 @@ import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 import {
-  Category as PrismaCategory,
+ 
   Product,
   Image,
   ProductSize,
   ProductColor,
   Size,
   Color,
+  Category,
+  Subcategory,
 } from "@prisma/client";
 
-interface Category extends PrismaCategory {
-  subcategories?: { id: string; name: string }[];
-}
+// interface Category extends PrismaCategory {
+//   subcategories?: { id: string; name: string }[];
+// }
 import { Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -103,7 +105,11 @@ interface ProductProps {
         })[];
       })
     | null;
-  defaultCategoryId?: string; //
+    defaultCategory?: {
+      id: string;
+      subcategories: Subcategory[];
+      // thêm các trường khác nếu cần
+    };
 
   sizes: Size[];
   colors: Color[];
@@ -113,7 +119,7 @@ type ProductFormValues = z.infer<typeof formSchema>;
 
 export const ProductForm: React.FC<ProductProps> = ({
   initialData,
-  defaultCategoryId,
+  defaultCategory,
   sizes,
   colors,
 }) => {
@@ -166,7 +172,7 @@ export const ProductForm: React.FC<ProductProps> = ({
           sizes: [],
           colors: [],
           name: "",
-          categoryId: defaultCategoryId ?? "",
+          categoryId: defaultCategory?.id ?? "",
 
           price: 0,
           images: [],
@@ -258,12 +264,13 @@ export const ProductForm: React.FC<ProductProps> = ({
       <Separator />
 
       <Form {...form}>
+   
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full md:w-1/2 mx-auto">
           <div className="grid grid-cols-1 gap-8 mt-[15px]">
-            {initialData?.category?.subcategories &&
-              initialData.category.subcategories.length > 0 && (
+            {defaultCategory?.subcategories &&
+              defaultCategory?.subcategories.length > 0 && (
                 <FormField
                   control={form.control}
                   name="subCategoryId"
@@ -283,7 +290,7 @@ export const ProductForm: React.FC<ProductProps> = ({
                           </FormControl>
 
                           <SelectContent position="popper">
-                            {initialData?.category?.subcategories?.map(
+                            {defaultCategory.subcategories?.map(
                               (subcategory) => (
                                 <SelectItem
                                   key={subcategory.id}
