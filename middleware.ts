@@ -18,19 +18,18 @@ export async function middleware(request: NextRequest) {
 
   console.log("🧭 Full URL:", fullUrl);
   console.log("🔐 Token:", token);
-  const allowedOrigin = "https://happyfurniture.logtech.vn";
+
 
   // Set CORS headers
   const res = NextResponse.next();
-  res.headers.set("Access-Control-Allow-Credentials", "true");
-  res.headers.set("Access-Control-Allow-Origin", allowedOrigin); // ✅ Chỉ để domain chính
-
-  res.headers.set("Access-Control-Allow-Origin", "*"); // Replace with domain if needed
-  res.headers.set("Access-Control-Allow-Methods", "GET,DELETE,PATCH,POST,PUT");
+  res.headers.set('Access-Control-Allow-Origin', 'https://happyfurniture.logtech.vn');
+  res.headers.set('Access-Control-Allow-Credentials', 'true');
+  res.headers.set('Access-Control-Allow-Methods', 'GET,DELETE,PATCH,POST,PUT');
   res.headers.set(
-    "Access-Control-Allow-Headers",
-    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
   );
+
 
   // Nếu là route công khai => cho qua
   if (publicPaths.some((publicPath) => pathname.startsWith(publicPath))) {
