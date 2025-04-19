@@ -18,10 +18,13 @@ export async function middleware(request: NextRequest) {
 
   console.log("🧭 Full URL:", fullUrl);
   console.log("🔐 Token:", token);
+  const allowedOrigin = "https://happyfurniture.logtech.vn";
 
   // Set CORS headers
   const res = NextResponse.next();
   res.headers.set("Access-Control-Allow-Credentials", "true");
+  res.headers.set("Access-Control-Allow-Origin", allowedOrigin); // ✅ Chỉ để domain chính
+
   res.headers.set("Access-Control-Allow-Origin", "*"); // Replace with domain if needed
   res.headers.set("Access-Control-Allow-Methods", "GET,DELETE,PATCH,POST,PUT");
   res.headers.set(
