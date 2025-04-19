@@ -21,6 +21,7 @@ export async function GET(
       const searchParams = new URL(req.url).searchParams;
       const query = searchParams.get("q");
   
+  
       if (!query) {
         return NextResponse.json({ message: "Query parameter is required" }, { status: 400 });
       }
@@ -38,7 +39,7 @@ export async function GET(
         }
       });
 
-      return NextResponse.json(products, { status: 200 });
+      return NextResponse.json(products);
     } catch (err) {
       console.log("[SEARCHS_GET]", err);
       return new NextResponse("Interal error", { status: 500 });
