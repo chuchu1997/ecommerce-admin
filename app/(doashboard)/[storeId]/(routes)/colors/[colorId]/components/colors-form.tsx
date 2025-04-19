@@ -66,6 +66,7 @@ export const ColorsForm: React.FC<ColorsProps> = ({ initialData }) => {
   const onSubmit = async (data: ColorsFormValues) => {
     try {
       setLoading(true);
+    
       if (initialData) {
         await axios.patch(
           `/api/${params.storeId}/colors/${params.colorId}`,

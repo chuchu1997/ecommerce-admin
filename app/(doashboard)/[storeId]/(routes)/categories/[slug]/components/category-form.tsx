@@ -77,6 +77,9 @@ export const CategoryForm: React.FC<CategoryProps> = ({
   const onSubmit = async (data: CategoryFormValues) => {
     try {
       setLoading(true);
+      if (data.slugData) {
+        data.slugData = data.slugData.replace(/\//g, '');
+      }
       if (initialData) {
         await axios.patch(
           `/api/${params.storeId}/categories/${params.slug}`,

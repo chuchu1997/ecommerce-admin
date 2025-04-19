@@ -79,6 +79,7 @@ export const BillboardsForm: React.FC<BillboardsProps> = ({ initialData }) => {
   const onSubmit = async (data: BillboardsFormValues) => {
     try {
       setLoading(true);
+    
       if (initialData) {
         await axios.patch(
           `/api/${params.storeId}/billboards/${params.billboardId}`,

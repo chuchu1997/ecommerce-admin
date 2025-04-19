@@ -78,6 +78,9 @@ export const NewsForm: React.FC<NewsProps> = ({ initialData }) => {
 
   const onSubmit = async (data: NewsFormValues) => {
     console.log("data", data);
+    if (data.slugData) {
+      data.slugData = data.slugData.replace(/\//g, '');
+    }
     try {
       setLoading(true);
       if (initialData) {

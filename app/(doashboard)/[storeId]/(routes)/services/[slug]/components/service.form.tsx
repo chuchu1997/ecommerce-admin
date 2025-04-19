@@ -106,6 +106,9 @@ export const ServiceForm: React.FC<ServicesProps> = ({
   const onSubmit = async (data: ProductFormValues) => {
     try {
       setLoading(true);
+      if (data.slugData) {
+        data.slugData = data.slugData.replace(/\//g, '');
+      }
       if (initialData) {
         await axios.patch(
           `/api/${params.storeId}/services/${params.slug}`,
