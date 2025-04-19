@@ -107,7 +107,7 @@ export async function PATCH(req: Request, props: { params: Params }) {
       return new NextResponse("Forbinden", { status: 403 });
     }
 
-    const productOld = await prisma?.product.findUnique({
+    const productOld = await prismadb.product.findUnique({
       where: {
         slug: slug,
       },
